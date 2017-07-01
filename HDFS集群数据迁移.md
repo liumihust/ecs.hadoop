@@ -29,6 +29,242 @@ hdfs dfsadmin –setBalancerBandwidth 104857600 //比如100M
 开始re-balance，   
 $HADOOP_HOME/sbin/start-balancer.sh -threshold 5 //5表示dataNode之间的硬盘占用率之差不超过5%。   
 re-balance进程会在后台一直运行，直到达到用户要求的平衡阈值。
+#### 1.3 ECS实验
+ECS上最初由三台服务器，node1、node2、node3，其中node1为NameNode，其余为DataNode。
+我们在HDFS存储5.58G的数据，如下所示，HDFS将数据均匀分布在两个dataNode。
+```
+-------------------------------------------------------
+Live datanodes (2):
+
+Name: 10.30.209.243:50010 (node2)
+Hostname: node2
+Decommission Status : Normal
+Configured Capacity: 42140499968 (39.25 GB)
+DFS Used: 2991955968 (2.79 GB)
+Non DFS Used: 4106268672 (3.82 GB)
+DFS Remaining: 35042275328 (32.64 GB)
+DFS Used%: 7.10%
+DFS Remaining%: 83.16%
+Configured Cache Capacity: 0 (0 B)
+Cache Used: 0 (0 B)
+Cache Remaining: 0 (0 B)
+Cache Used%: 100.00%
+Cache Remaining%: 0.00%
+Xceivers: 1
+Last contact: Sat Jul 01 15:24:26 CST 2017
+
+
+Name: 10.29.254.31:50010 (node3)
+Hostname: node3
+Decommission Status : Normal
+Configured Capacity: 42140499968 (39.25 GB)
+DFS Used: 2991955968 (2.79 GB)
+Non DFS Used: 4070301696 (3.79 GB)
+DFS Remaining: 35078242304 (32.67 GB)
+DFS Used%: 7.10%
+DFS Remaining%: 83.24%
+Configured Cache Capacity: 0 (0 B)
+Cache Used: 0 (0 B)
+Cache Remaining: 0 (0 B)
+Cache Used%: 100.00%
+Cache Remaining%: 0.00%
+Xceivers: 1
+Last contact: Sat Jul 01 15:24:26 CST 2017
+```
+接下来，我们在ECS再申请两个新实例node4、node5作为dataNode，同时把node1也添加为dataNode，按照前面的迁移操作，完成后的结果如下所示：
+
+```
+-------------------------------------------------------
+Live datanodes (5):
+
+Name: 10.30.209.242:50010 (node4)
+Hostname: node4
+Decommission Status : Normal
+Configured Capacity: 42140499968 (39.25 GB)
+DFS Used: 1754566896 (1.63 GB)
+Non DFS Used: 4011880208 (3.74 GB)
+DFS Remaining: 36374052864 (33.88 GB)
+DFS Used%: 4.16%
+DFS Remaining%: 86.32%
+Configured Cache Capacity: 0 (0 B)
+Cache Used: 0 (0 B)
+Cache Remaining: 0 (0 B)
+Cache Used%: 100.00%
+Cache Remaining%: 0.00%
+Xceivers: 1
+Last contact: Sat Jul 01 15:31:38 CST 2017
+
+
+Name: 10.30.209.243:50010 (node2)
+Hostname: node2
+Decommission Status : Decommissioned
+Configured Capacity: 42140499968 (39.25 GB)
+DFS Used: 2991955968 (2.79 GB)
+Non DFS Used: 4106334208 (3.82 GB)
+DFS Remaining: 35042209792 (32.64 GB)
+DFS Used%: 7.10%
+DFS Remaining%: 83.16%
+Configured Cache Capacity: 0 (0 B)
+Cache Used: 0 (0 B)
+Cache Remaining: 0 (0 B)
+Cache Used%: 100.00%
+Cache Remaining%: 0.00%
+Xceivers: 1
+Last contact: Sat Jul 01 15:31:38 CST 2017
+
+
+Name: 10.30.210.52:50010 (node5)
+Hostname: node5
+Decommission Status : Normal
+Configured Capacity: 42140499968 (39.25 GB)
+DFS Used: 2243908468 (2.09 GB)
+Non DFS Used: 4230229132 (3.94 GB)
+DFS Remaining: 35666362368 (33.22 GB)
+DFS Used%: 5.32%
+DFS Remaining%: 84.64%
+Configured Cache Capacity: 0 (0 B)
+Cache Used: 0 (0 B)
+Cache Remaining: 0 (0 B)
+Cache Used%: 100.00%
+Cache Remaining%: 0.00%
+Xceivers: 1
+Last contact: Sat Jul 01 15:31:38 CST 2017
+
+
+Name: 10.29.254.31:50010 (node3)
+Hostname: node3
+Decommission Status : Decommissioned
+Configured Capacity: 42140499968 (39.25 GB)
+DFS Used: 2991955968 (2.79 GB)
+Non DFS Used: 4070334464 (3.79 GB)
+DFS Remaining: 35078209536 (32.67 GB)
+DFS Used%: 7.10%
+DFS Remaining%: 83.24%
+Configured Cache Capacity: 0 (0 B)
+Cache Used: 0 (0 B)
+Cache Remaining: 0 (0 B)
+Cache Used%: 100.00%
+Cache Remaining%: 0.00%
+Xceivers: 1
+Last contact: Sat Jul 01 15:31:38 CST 2017
+
+
+Name: 10.30.209.220:50010 (node1)
+Hostname: node1
+Decommission Status : Normal
+Configured Capacity: 42140499968 (39.25 GB)
+DFS Used: 1985286012 (1.85 GB)
+Non DFS Used: 5325684868 (4.96 GB)
+DFS Remaining: 34829529088 (32.44 GB)
+DFS Used%: 4.71%
+DFS Remaining%: 82.65%
+Configured Cache Capacity: 0 (0 B)
+Cache Used: 0 (0 B)
+Cache Remaining: 0 (0 B)
+Cache Used%: 100.00%
+Cache Remaining%: 0.00%
+Xceivers: 1
+Last contact: Sat Jul 01 15:31:38 CST 2017
+
+```
+不难看出，node2、node3的所有数据块都转移到了node1、node4、node5(node2、node3自身数据不会变)，且node2、node3都处于Decommissioned状态。它们将不参与存储，我们继续验证，向HDFS存入707M的数据，结果：
+```
+------------------------------------------------------
+Live datanodes (5):
+
+Name: 10.30.209.242:50010 (node4)
+Hostname: node4
+Decommission Status : Normal
+Configured Capacity: 42140499968 (39.25 GB)
+DFS Used: 2096789095 (1.95 GB)
+Non DFS Used: 4012870041 (3.74 GB)
+DFS Remaining: 36030840832 (33.56 GB)
+DFS Used%: 4.98%
+DFS Remaining%: 85.50%
+Configured Cache Capacity: 0 (0 B)
+Cache Used: 0 (0 B)
+Cache Remaining: 0 (0 B)
+Cache Used%: 100.00%
+Cache Remaining%: 0.00%
+Xceivers: 1
+Last contact: Sat Jul 01 15:37:26 CST 2017
+
+
+Name: 10.30.209.243:50010 (node2)
+Hostname: node2
+Decommission Status : Decommissioned
+Configured Capacity: 42140499968 (39.25 GB)
+DFS Used: 2991955968 (2.79 GB)
+Non DFS Used: 4106346496 (3.82 GB)
+DFS Remaining: 35042197504 (32.64 GB)
+DFS Used%: 7.10%
+DFS Remaining%: 83.16%
+Configured Cache Capacity: 0 (0 B)
+Cache Used: 0 (0 B)
+Cache Remaining: 0 (0 B)
+Cache Used%: 100.00%
+Cache Remaining%: 0.00%
+Xceivers: 1
+Last contact: Sat Jul 01 15:32:35 CST 2017
+
+
+Name: 10.30.210.52:50010 (node5)
+Hostname: node5
+Decommission Status : Normal
+Configured Capacity: 42140499968 (39.25 GB)
+DFS Used: 2649776149 (2.47 GB)
+Non DFS Used: 4231405547 (3.94 GB)
+DFS Remaining: 35259318272 (32.84 GB)
+DFS Used%: 6.29%
+DFS Remaining%: 83.67%
+Configured Cache Capacity: 0 (0 B)
+Cache Used: 0 (0 B)
+Cache Remaining: 0 (0 B)
+Cache Used%: 100.00%
+Cache Remaining%: 0.00%
+Xceivers: 1
+Last contact: Sat Jul 01 15:37:26 CST 2017
+
+
+Name: 10.29.254.31:50010 (node3)
+Hostname: node3
+Decommission Status : Decommissioned
+Configured Capacity: 42140499968 (39.25 GB)
+DFS Used: 2991955968 (2.79 GB)
+Non DFS Used: 4070346752 (3.79 GB)
+DFS Remaining: 35078197248 (32.67 GB)
+DFS Used%: 7.10%
+DFS Remaining%: 83.24%
+Configured Cache Capacity: 0 (0 B)
+Cache Used: 0 (0 B)
+Cache Remaining: 0 (0 B)
+Cache Used%: 100.00%
+Cache Remaining%: 0.00%
+Xceivers: 1
+Last contact: Sat Jul 01 15:32:53 CST 2017
+
+
+Name: 10.30.209.220:50010 (node1)
+Hostname: node1
+Decommission Status : Normal
+Configured Capacity: 42140499968 (39.25 GB)
+DFS Used: 2733319804 (2.55 GB)
+Non DFS Used: 5326780804 (4.96 GB)
+DFS Remaining: 34080399360 (31.74 GB)
+DFS Used%: 6.49%
+DFS Remaining%: 80.87%
+Configured Cache Capacity: 0 (0 B)
+Cache Used: 0 (0 B)
+Cache Remaining: 0 (0 B)
+Cache Used%: 100.00%
+Cache Remaining%: 0.00%
+Xceivers: 1
+Last contact: Sat Jul 01 15:37:26 CST 2017
+```
+node2、node3的数据没有发生任何变化，只有node1、node4、node5的数据在增加，事实上node2、node3已经可以直接kill掉了。
+到此为止，我们已经实现了旧实例的硬盘数据往新实例硬盘的迁移。
+
+
 
 ### 2 NameNode迁移（可选）
 步骤1已经完成了HDFS的数据的迁移，但是HDFS的元数据和快照都在nameNode上，当然，如果用户不想迁移旧实例上的nameNode也可以，因为nameNode不存储数据，只是文件系统的管理者。如果要迁移nameNode，还需要进行后面的步骤。   
