@@ -7,12 +7,14 @@
 方案：
 1、DataNode迁移
 将新增的基于本地硬盘的实例（后面统称新实例）添加到现有的集群，新旧混合，然后创建一个文件oldInstances，记录所有旧dataNode的ip地址。放到定义目录，比如$HADOOP_HOME$/etc/hadoop/。然后修改配置文件hdfs-site.xml，添加如下内容：
-
+<pre><code>
              <property>
 　　　　　　　　<name>dfs.hosts.exclude</name>
 　　  	  <value>$HADOOP_HOME$/etc/hadoop/oldInstances</value>
                <final>true</final>
 　　　　　　</property>
+      
+ </code></pre>
 
 将修改后的配置文件及oldInstances分发到集群所有实例对应的目录。
 
