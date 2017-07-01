@@ -428,7 +428,7 @@ Last contact: Sat Jul 01 18:32:31 CST 2017
 
 ### 2 NameNode迁移（可选）
 步骤1已经完成了HDFS的数据的迁移，数据已经全部迁移到了新的实例上。但是NameNode还没有迁移，HDFS的元数据和快照都在NameNode上，当然，如果新实例和旧实例都是在一个数据中心或者局域网里面，用户不迁移旧实例上的NameNode到新实例也可以，因为NameNode不存储数据，只是文件系统的管理者。如果要迁移NameNode，还需要进行后面的步骤。   
-NameNode作为HDFS文件系统的命名空间的管理者，其将所有的文件和文件目录的元数据保存在一个文件系统树中。为了保证交互速度，这些元数据信息会保存在内存中，但同时也会定期将这些信息保存到硬盘上进行持久化存储，这些信息保存的目录即为：$dfs.namenode.name.dir$/current/  
+NameNode作为HDFS文件系统的命名空间的管理者，其将所有的文件和目录的元数据保存在一个文件系统树中。为了使与客户端的交互更高效，这些元数据信息都会保存在内存中，但同时也会定期将这些信息保存到硬盘上进行持久化存储，这些信息保存的目录即为：$dfs.namenode.name.dir$/current/  
 关于NameNode的数据的详细介绍请看https://github.com/liumihust/ecs.hadoop/blob/master/Hadoop%20NameNode%20%E5%85%83%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E5%88%86%E6%9E%90.md   
 
 下图为该目录下的结构（我在ECS上的实验机子为例）：   
@@ -438,7 +438,7 @@ NameNode作为HDFS文件系统的命名空间的管理者，其将所有的文�
 命名空间镜像文件（fsimage）   
 修改日志文件（edits）   
 它们是恢复NameNode时重要的文件。   
-所以我们如果迁移NameNode，就需要先将当前NameNode该目录下的文件全部拷贝到新的NameNode的对应的目录下，即$dfs.namenode.name.dir/current/。 然后在新的实例上启动NameNode进程即可。
+所以我们如果迁移NameNode，就需要先将当前NameNode该目录下的文件全部拷贝到新的NameNode的对应的目录下，即$dfs.namenode.name.dir/current/。 然后在新的实例上启动NameNode进程即可。这样新启动的HDFS集群就是它关闭之前的状态。
 ##### ECS实验
 前面的实验已经完成了HDFS数据的迁移，从node1、node2全部迁移到node3,、node4、node5。接下来我们接着将NameNode从node1迁移到node3（新实例）。     
 修改配置文件core-site.xml：
@@ -465,7 +465,7 @@ Re-format filesystem in Storage Directory /tmp/hadoop/tmp/dfs/name ? (Y or N)
 ```
 $HADOOP_HOME/sbin/start-dfs.sh
 ```
-如果启动没问题，我们将可以看到，node3、node4、node5均启动了DataNode，node3启动了NameNode，任意节点执行：
+如果启动没问题，我们将可以看到，node3、node4、node5均启动了DataNode，node3启动了NameNode，在任意节点执行：
 ```
 hdfs dfsadmin -report
 ```
@@ -558,7 +558,7 @@ Found 20 items
 -rw-r--r--   2 root supergroup  185540433 2017-07-01 17:32 /liumihust/data9
 
 ```
-可以看到数据完好无损，至此，就实现了将HDFS从一个集群原封不动地迁移到了一个新的集群。
+可以看到20块数据完好无损，至此，就实现了将HDFS从一个集群原封不动地迁移到了一个新的集群。
 
 the end
 
