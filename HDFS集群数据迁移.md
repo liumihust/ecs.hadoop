@@ -27,13 +27,15 @@
 由于HDFS考虑到re-balance的IO可能会影响应用，所以默认的IO带宽限制得很低，我们也可以提升，   
 hdfs dfsadmin –setBalancerBandwidth 104857600 //比如100M   
 开始re-balance，   
-$HADOOP_HOME$/sbin/start-balancer.sh -threshold 5 //5表示dataNode之间的硬盘占用率之差不超过5%。   
+$HADOOP_HOME/sbin/start-balancer.sh -threshold 5 //5表示dataNode之间的硬盘占用率之差不超过5%。   
 re-balance进程会在后台一直运行，直到达到用户要求的平衡阈值。
 
 ### 2 NameNode迁移（可选）
 步骤1已经完成了HDFS的数据的迁移，但是HDFS的元数据和快照都在nameNode上，当然，如果用户不想迁移旧实例上的nameNode也可以，因为nameNode不存储数据，只是文件系统的管理者。如果要迁移nameNode，还需要进行后面的步骤。   
-NameNode作为HDFS文件系统的命名空间的管理者，其将所有的文件和文件目录的元数据保存在一个文件系统树中。为了保证交互速度，这些元数据信息会保存在内存中，但同时也会定期将这些信息保存到硬盘上进行持久化存储，这些信息保存的目录即为：$dfs.namenode.name.dir$/current/   
-下图为该目录下的结构（我在ECS上的实验机子为例）：   
+NameNode作为HDFS文件系统的命名空间的管理者，其将所有的文件和文件目录的元数据保存在一个文件系统树中。为了保证交互速度，这些元数据信息会保存在内存中，但同时也会定期将这些信息保存到硬盘上进行持久化存储，这些信息保存的目录即为：$dfs.namenode.name.dir$/current/  
+关于这部分的详细介绍请看https://github.com/liumihust/ecs.hadoop/blob/master/Hadoop%20NameNode%20%E5%85%83%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E5%88%86%E6%9E%90.md   
+
+下图为该目录下的结构（我在ECS上的实验机子为例）：   
 ![current](https://github.com/liumihust/gitTset/blob/master/current.PNG)
 
 主要的文件：   
