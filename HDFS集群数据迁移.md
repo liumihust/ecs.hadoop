@@ -364,7 +364,7 @@ Cache Remaining%: 0.00%
 Xceivers: 1
 Last contact: Sat Jul 01 17:51:12 CST 2017
 ```
-node1、node2的数据没有发生任何变化，只有node3、node4、node5的数据在增加，事实上node1、node2的数据已经没有作用，可以直接kill掉了。
+node1、node2的数据没有发生任何变化，只有node3、node4、node5的数据在增加，事实上node1、node2的数据已经没有作用，可以直接kill掉了。    
 到此为止，我们已经实现了旧实例的硬盘数据往新实例硬盘的迁移。如果发现数据分布不均匀，还可以re-balance，
 ```
 start-balancer.sh -threshold 1
