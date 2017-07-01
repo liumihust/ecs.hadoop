@@ -276,7 +276,7 @@ node2、node3的数据没有发生任何变化，只有node1、node4、node5的�
 
 
 ### 2 NameNode迁移（可选）
-步骤1已经完成了HDFS的数据的迁移，但是HDFS的元数据和快照都在NameNode上，当然，如果用户不想迁移旧实例上的NameNode也可以，因为NameNode不存储数据，只是文件系统的管理者。如果要迁移NameNode，还需要进行后面的步骤。   
+步骤1已经完成了HDFS的数据的迁移，数据已经全部迁移到了新的实例上。但是NameNode还没有迁移，HDFS的元数据和快照都在NameNode上，当然，如果用户不想迁移旧实例上的NameNode也可以，因为NameNode不存储数据，只是文件系统的管理者。如果要迁移NameNode，还需要进行后面的步骤。   
 NameNode作为HDFS文件系统的命名空间的管理者，其将所有的文件和文件目录的元数据保存在一个文件系统树中。为了保证交互速度，这些元数据信息会保存在内存中，但同时也会定期将这些信息保存到硬盘上进行持久化存储，这些信息保存的目录即为：$dfs.namenode.name.dir$/current/  
 关于这部分的详细介绍请看https://github.com/liumihust/ecs.hadoop/blob/master/Hadoop%20NameNode%20%E5%85%83%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E5%88%86%E6%9E%90.md   
 
