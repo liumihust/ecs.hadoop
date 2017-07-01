@@ -80,7 +80,7 @@ Cache Remaining%: 0.00%
 Xceivers: 1
 Last contact: Sat Jul 01 15:24:26 CST 2017
 ```
-接下来，我们在ECS再申请两个新实例node4、node5作为dataNode，同时把node1也添加为dataNode，一开始三个新的DataNode没有数据。接下来按照前面的迁移操作，完成后的结果如下所示：
+接下来，我们在ECS再申请两个新实例node4、node5作为dataNode，同时把node1也添加为DataNode，一开始三个新的DataNode没有数据。接下来按照前面的迁移操作，完成后的结果如下所示：
 
 ```
 -------------------------------------------------------
