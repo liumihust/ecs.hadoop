@@ -10,9 +10,9 @@ HDFS集群数据迁移
 -
 将新增的基于本地硬盘的实例（后面统称新实例）添加到现有的集群，新旧混合，然后创建一个文件oldInstances，记录所有旧dataNode的ip地址。放到定义目录，比如$HADOOP_HOME$/etc/hadoop/。然后修改配置文件hdfs-site.xml，添加如下内容：
 ```
-            <property>
+           <property>
 　　　　　　　　<name>dfs.hosts.exclude</name>
-　　  	       <value>$HADOOP_HOME$/etc/hadoop/oldInstances</value>
+　　  	 <value>$HADOOP_HOME$/etc/hadoop/oldInstances</value>
                <final>true</final>
 　　　　　　</property>
       
@@ -34,6 +34,7 @@ re-balance进程会在后台一直运行，直到达到用户要求的平衡阈�
 步骤1已经完成了HDFS的数据的迁移，但是HDFS的元数据和快照都在nameNode上，当然，如果用户不想迁移HDFS也可以，因为nameNode不存储数据，只是文件系统的管理者。如果要迁移nameNode，需要进行后面的步骤。   
 NameNode作为HDFS文件系统的命名空间的管理者，其将所有的文件和文件目录的元数据保存在一个文件系统树中。为了保证交互速度，这些元数据信息会保存在内存中，但同时也会定期将这些信息保存到硬盘上进行持久化存储，这些信息保存的目录即为：$dfs.namenode.name.dir$/current/   
 下图为该目录下的结构（我在ECS上的实验机子为例）：   
+![current](https://github.com/liumihust/gitTset/blob/master/current.PNG)
 
 主要的文件：   
 命名空间镜像文件（fsimage）   
