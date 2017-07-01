@@ -365,7 +365,66 @@ Xceivers: 1
 Last contact: Sat Jul 01 17:51:12 CST 2017
 ```
 node1、node2的数据没有发生任何变化，只有node3、node4、node5的数据在增加，事实上node1、node2已经可以直接kill掉了。
-到此为止，我们已经实现了旧实例的硬盘数据往新实例硬盘的迁移。
+到此为止，我们已经实现了旧实例的硬盘数据往新实例硬盘的迁移。如果发现数据分布不均匀，还可以re-balance，
+```
+start-balancer.sh -threshold 1
+```
+分布相对于之前更平衡：
+```
+Name: 10.30.210.52:50010 (node5)
+Hostname: node5
+Decommission Status : Normal
+Configured Capacity: 42140499968 (39.25 GB)
+DFS Used: 2701537280 (2.52 GB)
+Non DFS Used: 4230520832 (3.94 GB)
+DFS Remaining: 35208441856 (32.79 GB)
+DFS Used%: 6.41%
+DFS Remaining%: 83.55%
+Configured Cache Capacity: 0 (0 B)
+Cache Used: 0 (0 B)
+Cache Remaining: 0 (0 B)
+Cache Used%: 100.00%
+Cache Remaining%: 0.00%
+Xceivers: 1
+Last contact: Sat Jul 01 18:32:31 CST 2017
+
+
+Name: 10.30.209.242:50010 (node4)
+Hostname: node4
+Decommission Status : Normal
+Configured Capacity: 42140499968 (39.25 GB)
+DFS Used: 2617966592 (2.44 GB)
+Non DFS Used: 4012175360 (3.74 GB)
+DFS Remaining: 35510358016 (33.07 GB)
+DFS Used%: 6.21%
+DFS Remaining%: 84.27%
+Configured Cache Capacity: 0 (0 B)
+Cache Used: 0 (0 B)
+Cache Remaining: 0 (0 B)
+Cache Used%: 100.00%
+Cache Remaining%: 0.00%
+Xceivers: 1
+Last contact: Sat Jul 01 18:32:32 CST 2017
+
+
+Name: 10.29.254.31:50010 (node3)
+Hostname: node3
+Decommission Status : Normal
+Configured Capacity: 42140499968 (39.25 GB)
+DFS Used: 2160427008 (2.01 GB)
+Non DFS Used: 4070670336 (3.79 GB)
+DFS Remaining: 35909402624 (33.44 GB)
+DFS Used%: 5.13%
+DFS Remaining%: 85.21%
+Configured Cache Capacity: 0 (0 B)
+Cache Used: 0 (0 B)
+Cache Remaining: 0 (0 B)
+Cache Used%: 100.00%
+Cache Remaining%: 0.00%
+Xceivers: 1
+Last contact: Sat Jul 01 18:32:31 CST 2017
+
+```
 
 
 
