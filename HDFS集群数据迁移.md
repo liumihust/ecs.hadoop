@@ -20,15 +20,23 @@
 
 将修改后的配置文件及oldInstances分发到集群所有实例对应的目录。
 
-在NameNode上执行hdfs dfsadmin –refreshNodes，HDFS会自动读取oldInstances里面所有的hostname，并将这些节点的dataNode数据迁移到其他新的的DataNode上。全部迁移结束后，这些旧的实例将处于Decommissioned状态，不参与HDFS的储存，可以直接杀死。这样就实现了数据从旧实例到新实例的迁移。值得说明的是，迁移后的旧实例的DataNode的数据并不会改变，这样，在迁移过程中出现任何差错，都不会导致原数据丢失。   
+在NameNode上执行:
+```
+hdfs dfsadmin –refreshNodes
+```
+HDFS会自动读取oldInstances里面所有的hostname，并将这些节点的dataNode数据迁移到其他新的的DataNode上。全部迁移结束后，这些旧的实例将处于Decommissioned状态，不参与HDFS的储存，可以直接杀死。这样就实现了数据从旧实例到新实例的迁移。值得说明的是，迁移后的旧实例的DataNode的数据并不会改变，这样，在迁移过程中出现任何差错，都不会导致原数据丢失。   
 注：从新实例往旧实例迁移的时候，一定要切记，新实例的数量要大于当前HDFS所设置的副本数，默认为3，不然会迁移失败。这是HDFS目前尚未fix的一个issue，主要原因是，这种情况很极端，实际场景很少遇到，如果用户遇到了可以尝试先减少配置文件里设置的副本数，再迁移。详见:https://issues.apache.org/jira/browse/HDFS-1590
 
 #### 1.2 Re-balance
 考虑到迁移后的数据分布不一定均衡，可以用HDFS自带的均衡器进行re-balance：   
-由于HDFS考虑到re-balance的IO可能会影响应用，所以默认的IO带宽限制得很低，我们也可以提升，   
+由于HDFS考虑到re-balance的IO可能会影响应用，所以默认的IO带宽限制得很低，我们也可以提升，
+```
 hdfs dfsadmin –setBalancerBandwidth 104857600 //比如100M   
+```
 开始re-balance，   
+```
 $HADOOP_HOME/sbin/start-balancer.sh -threshold 5 //5表示dataNode之间的硬盘占用率之差不超过5%。   
+```
 re-balance进程会在后台一直运行，直到达到用户要求的平衡阈值。
 
 #### 1.3 阿里云ECS实例实验
