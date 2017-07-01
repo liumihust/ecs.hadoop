@@ -440,7 +440,7 @@ NameNode作为HDFS文件系统的命名空间的管理者，其将所有的文�
 它们是恢复NameNode时重要的文件。   
 所以我们如果迁移NameNode，就需要先将当前NameNode该目录下的文件全部拷贝到新的NameNode的对应的目录下，即$dfs.namenode.name.dir/current/。 然后在新的实例上启动NameNode进程即可。
 ##### ECS实验
-前面的实验已经完成了HDFS数据的迁移，从node1、node2全部迁移到node3,、node4、node5。接下来我们接着将NameNode从node1迁移到node3（新实例）。   
+前面的实验已经完成了HDFS数据的迁移，从node1、node2全部迁移到node3,、node4、node5。接下来我们接着将NameNode从node1迁移到node3（新实例）。     
 修改配置文件core-site.xml：
 ``` 
                <name>fs.defaultFS</name>
