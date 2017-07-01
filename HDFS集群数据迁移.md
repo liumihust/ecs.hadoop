@@ -29,9 +29,10 @@ hdfs dfsadmin –setBalancerBandwidth 104857600 //比如100M
 开始re-balance，   
 $HADOOP_HOME/sbin/start-balancer.sh -threshold 5 //5表示dataNode之间的硬盘占用率之差不超过5%。   
 re-balance进程会在后台一直运行，直到达到用户要求的平衡阈值。
-#### 1.3 ECS实验
+
+#### 1.3 阿里云ECS实例实验
 ECS上最初由三台服务器，node1、node2、node3，其中node1为NameNode，其余为DataNode。
-我们在HDFS存储5.58G的数据，如下所示，HDFS将数据均匀分布在两个dataNode。
+我们在HDFS存储5.58G的数据，如下所示，HDFS将数据均匀分布在两个DataNode。
 ```
 -------------------------------------------------------
 Live datanodes (2):
@@ -40,6 +41,9 @@ Name: 10.30.209.243:50010 (node2)
 Hostname: node2
 Decommission Status : Normal
 Configured Capacity: 42140499968 (39.25 GB)
+```
+<font color=#00ffff size=72>haha</font>
+```
 DFS Used: 2991955968 (2.79 GB)
 Non DFS Used: 4106268672 (3.82 GB)
 DFS Remaining: 35042275328 (32.64 GB)
