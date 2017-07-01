@@ -22,7 +22,7 @@
 
 在nameNode上执行hdfs dfsadmin –refreshNodes，HDFS会自动读取oldInstances里面所有的hostname，并将这些节点的dataNode数据迁移到其他新的的dataNode上。全部迁移结束后，这些旧的实例将处于Decommissioned状态，不参与HDFS的储存，可以直接杀死。这样就实现了数据从旧实例到新实例的迁移。值得说明的是，迁移后的旧实例的dataNode的数据并不会改变，即在迁移过程中出现任何差错，都不会导致原数据丢失。
 
-#### 1.2 re-balance
+#### 1.2 Re-balance
 考虑到迁移后的数据分布不一定均衡，可以用HDFS自带的均衡器进行re-balance：   
 由于HDFS考虑到re-balance的IO可能会影响应用，所以默认的IO带宽限制得很低，我们也可以提升，   
 hdfs dfsadmin –setBalancerBandwidth 104857600 //比如100M   
