@@ -8,7 +8,7 @@
 ## 方案： 
 ### 1 DataNode迁移
 #### 1.1 数据迁移
-将新增的基于本地硬盘的实例（后面统称新实例）添加到现有的集群，新旧混合，然后创建一个文件oldInstances，记录所有旧dataNode的ip地址。放到自定义目录，比如$HADOOP_HOME$/etc/hadoop/。然后修改配置文件hdfs-site.xml，添加如下内容：
+将新增的基于本地硬盘的实例（后面统称新实例）添加到现有的集群，新旧混合，然后创建一个文件oldInstances，记录所有旧DataNode的ip地址。放到自定义目录，比如$HADOOP_HOME/etc/hadoop/。然后修改配置文件hdfs-site.xml，添加如下内容：
 ```
            <property>
                <name>dfs.hosts.exclude</name>
