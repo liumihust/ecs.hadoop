@@ -20,7 +20,10 @@
 
 将修改后的配置文件及oldInstances分发到集群所有实例对应的目录。
 
-在nameNode上执行hdfs dfsadmin –refreshNodes，HDFS会自动读取oldInstances里面所有的hostname，并将这些节点的dataNode数据迁移到其他新的的dataNode上。全部迁移结束后，这些旧的实例将处于Decommissioned状态，不参与HDFS的储存，可以直接杀死。这样就实现了数据从旧实例到新实例的迁移。值得说明的是，迁移后的旧实例的dataNode的数据并不会改变，即在迁移过程中出现任何差错，都不会导致原数据丢失。
+在nameNode上执行hdfs dfsadmin –refreshNodes，HDFS会自动读取oldInstances里面所有的hostname，并将这些节点的dataNode数据迁移到其他新的的dataNode上。全部迁移结束后，这些旧的实例将处于Decommissioned状态，不参与HDFS的储存，可以直接杀死。这样就实现了数据从旧实例到新实例的迁移。值得说明的是，迁移后的旧实例的dataNode的数据并不会改变，这样，在迁移过程中出现任何差错，都不会导致原数据丢失。
+注：从新实例往旧实例迁移的时候，一定要切记，新实例的数量要大于当前HDFS所设置的副本数，默认为3，不然会迁移失败。这是HDFS目前未fix的一个issue，主要原因是，这种情况很极端，实际场景很少遇到，如果用户遇到了可以尝试减少配置文件里的副本数。详见:https://issues.apache.org/jira/browse/HDFS-1590
+<font color=#00ffff size=72>注：从新实例往旧实例迁移的时候，一定要切记，新实例的数量要大于当前HDFS所设置的副本数，默认为3，不然会迁移失败。这是HDFS目前未fix的一个issue，主要原因是，这种情况很极端，实际场景很少遇到，如果用户遇到了可以尝试减少配置文件里的副本数。详见:https://issues.apache.org/jira/browse/HDFS-1590 </font>
+
 
 #### 1.2 Re-balance
 考虑到迁移后的数据分布不一定均衡，可以用HDFS自带的均衡器进行re-balance：   
@@ -41,9 +44,6 @@ Name: 10.30.209.243:50010 (node2)
 Hostname: node2
 Decommission Status : Normal
 Configured Capacity: 42140499968 (39.25 GB)
-```
-<font color=#00ffff size=72>haha</font>
-```
 DFS Used: 2991955968 (2.79 GB)
 Non DFS Used: 4106268672 (3.82 GB)
 DFS Remaining: 35042275328 (32.64 GB)
@@ -171,7 +171,7 @@ Xceivers: 1
 Last contact: Sat Jul 01 15:31:38 CST 2017
 
 ```
-不难看出，node2、node3的所有数据块都转移到了node1、node4、node5(node2、node3自身数据不会变)，且node2、node3都处于Decommissioned状态。它们将不参与存储，我们继续验证，向HDFS存入707M的数据，结果：
+不难看出，node2、node3的所有数据块都转移到了node1、node4、node5(node2、node3自身数据不会变)，且node2、node3都处于Decommissioned状态。它们将不参与存储，我们继续验证，再向HDFS存入707M的数据，结果如下：
 ```
 ------------------------------------------------------
 Live datanodes (5):
