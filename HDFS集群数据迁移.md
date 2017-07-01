@@ -270,7 +270,7 @@ Cache Remaining%: 0.00%
 Xceivers: 1
 Last contact: Sat Jul 01 17:49:12 CST 2017
 ```
-可以看到，node1、node2上的所有数据块都转移到了node3、node4、node5，且node1、node2已经处于Decommissioned状态。它们将不参与存储，我们继续验证，向HDFS存入707M的数据，结果：
+可以看到，node1、node2上的所有数据块都转移到了node3、node4、node5(前面已经提到，迁移完成后，原有的DataNode的数据不会变)，且node1、node2已经处于Decommissioned状态。它们将不参与存储，我们继续验证，向HDFS存入707M的数据，结果：
 ```
 -------------------------------------------------------
 Live datanodes (5):
