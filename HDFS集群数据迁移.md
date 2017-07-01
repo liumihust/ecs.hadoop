@@ -15,7 +15,6 @@
                <value>$HADOOP_HOME/etc/hadoop/oldInstances</value>
                <final>true</final>
            </property>
-      
 ```
 
 将修改后的配置文件及oldInstances分发到集群所有实例对应的目录。
