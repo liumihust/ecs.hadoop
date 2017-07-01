@@ -12,7 +12,7 @@
 ```
            <property>
                <name>dfs.hosts.exclude</name>
-               <value>$HADOOP_HOME$/etc/hadoop/oldInstances</value>
+               <value>$HADOOP_HOME/etc/hadoop/oldInstances</value>
                <final>true</final>
            </property>
       
