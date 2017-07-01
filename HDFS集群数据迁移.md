@@ -39,8 +39,8 @@ $HADOOP_HOME/sbin/start-balancer.sh -threshold 5 //5表示dataNode之间的硬�
 re-balance进程会在后台一直运行，直到达到用户要求的平衡阈值。
 
 #### 1.3 阿里云ECS实例实验
-ECS上最初有三台服务器，node1、node2构成一个集群，其中node1上同时启动NameNode、DataNode，node2为DataNode，数据块的副本数为2。   
-我们在HDFS存储2.77G的数据，考虑到副本，实际的数据量应该是两倍，5.54G。如下所示，HDFS将数据均匀地分布在两个DataNode。
+ECS上最初有两台服务器，node1、node2构成一个集群，其中node1上同时启动NameNode、DataNode，node2为DataNode，数据块的副本数为2。   
+我们在HDFS存储约2.77G的数据，考虑到副本，实际的数据量应该是两倍，约5.54G。如下所示，HDFS将数据均匀地分布在两个DataNode。
 ```
 -------------------------------------------------
 Live datanodes (2):
@@ -80,7 +80,7 @@ Cache Remaining%: 0.00%
 Xceivers: 1
 Last contact: Sat Jul 01 17:33:57 CST 2017
 ```
-接下来，我们在ECS再申请3个新实例node3、node4、node5作为DataNode，一开始三个新的DataNode没有数据，如下所示：
+接下来，我们在ECS再申请3个新实例node3、node4、node5作为DataNode添加到集群，一开始三个新的DataNode没有数据，如下所示：
 ```
 -------------------------------------------------
 Live datanodes (5):
@@ -270,7 +270,7 @@ Cache Remaining%: 0.00%
 Xceivers: 1
 Last contact: Sat Jul 01 17:49:12 CST 2017
 ```
-不难看出，node1、node2上的所有数据块都转移到了node3、node4、node5，且node1、node2都处于Decommissioned状态。它们将不参与存储，我们继续验证，向HDFS存入707M的数据，结果：
+可以看到，node1、node2上的所有数据块都转移到了node3、node4、node5，且node1、node2已经处于Decommissioned状态。它们将不参与存储，我们继续验证，向HDFS存入707M的数据，结果：
 ```
 -------------------------------------------------------
 Live datanodes (5):
@@ -364,7 +364,7 @@ Cache Remaining%: 0.00%
 Xceivers: 1
 Last contact: Sat Jul 01 17:51:12 CST 2017
 ```
-node1、node2的数据没有发生任何变化，只有node3、node4、node5的数据在增加，事实上node1、node2已经可以直接kill掉了。
+node1、node2的数据没有发生任何变化，只有node3、node4、node5的数据在增加，事实上node1、node2的数据已经没有作用，可以直接kill掉了。
 到此为止，我们已经实现了旧实例的硬盘数据往新实例硬盘的迁移。如果发现数据分布不均匀，还可以re-balance，
 ```
 start-balancer.sh -threshold 1
@@ -426,12 +426,10 @@ Last contact: Sat Jul 01 18:32:31 CST 2017
 
 ```
 
-
-
 ### 2 NameNode迁移（可选）
-步骤1已经完成了HDFS的数据的迁移，数据已经全部迁移到了新的实例上。但是NameNode还没有迁移，HDFS的元数据和快照都在NameNode上，当然，如果用户不想迁移旧实例上的NameNode也可以，因为NameNode不存储数据，只是文件系统的管理者。如果要迁移NameNode，还需要进行后面的步骤。   
+步骤1已经完成了HDFS的数据的迁移，数据已经全部迁移到了新的实例上。但是NameNode还没有迁移，HDFS的元数据和快照都在NameNode上，当然，如果新实例和旧实例都是在一个数据中心或者局域网里面，用户不迁移旧实例上的NameNode到新实例也可以，因为NameNode不存储数据，只是文件系统的管理者。如果要迁移NameNode，还需要进行后面的步骤。   
 NameNode作为HDFS文件系统的命名空间的管理者，其将所有的文件和文件目录的元数据保存在一个文件系统树中。为了保证交互速度，这些元数据信息会保存在内存中，但同时也会定期将这些信息保存到硬盘上进行持久化存储，这些信息保存的目录即为：$dfs.namenode.name.dir$/current/  
-关于这部分的详细介绍请看https://github.com/liumihust/ecs.hadoop/blob/master/Hadoop%20NameNode%20%E5%85%83%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E5%88%86%E6%9E%90.md   
+关于NameNode的数据的详细介绍请看https://github.com/liumihust/ecs.hadoop/blob/master/Hadoop%20NameNode%20%E5%85%83%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E5%88%86%E6%9E%90.md   
 
 下图为该目录下的结构（我在ECS上的实验机子为例）：   
 ![current](https://github.com/liumihust/gitTset/blob/master/current.PNG)
@@ -439,9 +437,9 @@ NameNode作为HDFS文件系统的命名空间的管理者，其将所有的文�
 主要的文件：   
 命名空间镜像文件（fsimage）   
 修改日志文件（edits）   
-它们是恢复nameNode时重要的文件。   
-所以我们如果迁移nameNode，就需要先将当前nameNode该目录下的文件全部拷贝到新的nameNode的对应的目录下，即$dfs.namenode.name.dir/current/。 然后在新的实例上启动nameNode进程即可。
-##### 实验
+它们是恢复NameNode时重要的文件。   
+所以我们如果迁移NameNode，就需要先将当前NameNode该目录下的文件全部拷贝到新的NameNode的对应的目录下，即$dfs.namenode.name.dir/current/。 然后在新的实例上启动NameNode进程即可。
+##### ECS实验
 前面的实验已经完成了HDFS数据的迁移，从node1、node2全部迁移到node3,、node4、node5。接下来我们接着将NameNode从node1迁移到node3（新实例）。   
 修改配置文件core-site.xml：
 ``` 
