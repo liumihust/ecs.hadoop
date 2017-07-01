@@ -42,4 +42,4 @@ NameNode作为HDFS文件系统的命名空间的管理者，其将所有的文�
 命名空间镜像文件（fsimage）   
 修改日志文件（edits）   
 它们是恢复nameNode时重要的文件。   
-所以我们如果迁移nameNode，就需要先将当前nameNode该目录下的文件全部拷贝到新的nameNode的对应的目录下。然后在新的实例上启动nameNode进程即可。
+所以我们如果迁移nameNode，就需要先将当前nameNode该目录下的文件全部拷贝到新的nameNode的对应的目录下，即$dfs.namenode.name.dir/current/。然后在新的实例上启动nameNode进程即可。
