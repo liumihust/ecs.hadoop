@@ -15,15 +15,5 @@ NameNode 在执行 HDFS 客户端提交的写操作的时候，会首先把这�
 有了这两个文件后，HDFS在重启时就可以根据这两个文件来进行状态恢复：首先将最新的checkpoint的元数据信息从fsimage中加载到内存，然后逐一执行edits修改日志文件中的操作记录以恢复到重启之前的最终状态。
 备注：Hadoop的持久化过程是将上一次checkpoint以后最近一段时间的操作保存到修改日志文件edits中
 
-```markdown
-Syntax highlighted code block
 ### SecondaryNameNode
 仅仅依靠nameNode已经能够完成数据的备份，但是当应用长时间运行，基于这样的备份进行恢复的开销很大，因为nameNode需要按照修改日志文件里面的操作一步步进行恢复。于是HDFS增加了一个额外的SecondaryNameNode，专门在后台读取nameNode的fsimage并载入内存中根据edits的操作记录生成新的fsimage提交给nameNode。nameNode收到新的fsimage后就会删除旧的fsimage，edits重新开始。这样就能保证fsimage是最新的，edits都是最近的操作，因为edits不会很大，既节省空间又降低了恢复的开销。
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/liumihust/git.io/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
