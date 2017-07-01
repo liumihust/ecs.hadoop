@@ -441,3 +441,128 @@ NameNode作为HDFS文件系统的命名空间的管理者，其将所有的文�
 修改日志文件（edits）   
 它们是恢复nameNode时重要的文件。   
 所以我们如果迁移nameNode，就需要先将当前nameNode该目录下的文件全部拷贝到新的nameNode的对应的目录下，即$dfs.namenode.name.dir/current/。 然后在新的实例上启动nameNode进程即可。
+##### 实验
+前面的实验已经完成了HDFS数据的迁移，从node1、node2全部迁移到node3,、node4、node5。接下来我们接着将NameNode从node1迁移到node3（新实例）。   
+修改配置文件core-site.xml：
+``` 
+               <name>fs.defaultFS</name>
+               <value>hdfs://node3:9000/</value>
+```
+将修改后的配置文件发布到所有节点。     
+将node1的$dfs.namenode.name.dir/current/ 下面的数据全部拷贝到node3对应的目录下，   
+```
+scp -r $dfs.namenode.name.dir/current/ node3:$dfs.namenode.name.dir/
+```
+在node3执行：   
+```
+hdfs namenode -format
+```
+中间会跳出选项
+```
+Re-format filesystem in Storage Directory /tmp/hadoop/tmp/dfs/name ? (Y or N) 
+```
+应选择 NO   
+
+接着执行，   
+```
+$HADOOP_HOME/sbin/start-dfs.sh
+```
+如果启动没问题，我们将可以看到，node3、node4、node5均启动了DataNode，node3启动了NameNode，任意节点执行：
+```
+hdfs dfsadmin -report
+```
+可以看到如下结果，跟NameNode迁移前一致:
+```
+-------------------------------------------------
+Live datanodes (3):
+
+Name: 10.30.210.52:50010 (node5)
+Hostname: node5
+Decommission Status : Normal
+Configured Capacity: 42140499968 (39.25 GB)
+DFS Used: 2701537280 (2.52 GB)
+Non DFS Used: 4231036928 (3.94 GB)
+DFS Remaining: 35207925760 (32.79 GB)
+DFS Used%: 6.41%
+DFS Remaining%: 83.55%
+Configured Cache Capacity: 0 (0 B)
+Cache Used: 0 (0 B)
+Cache Remaining: 0 (0 B)
+Cache Used%: 100.00%
+Cache Remaining%: 0.00%
+Xceivers: 1
+Last contact: Sat Jul 01 19:02:07 CST 2017
+
+
+Name: 10.30.209.242:50010 (node4)
+Hostname: node4
+Decommission Status : Normal
+Configured Capacity: 42140499968 (39.25 GB)
+DFS Used: 2617962496 (2.44 GB)
+Non DFS Used: 4012679168 (3.74 GB)
+DFS Remaining: 35509858304 (33.07 GB)
+DFS Used%: 6.21%
+DFS Remaining%: 84.27%
+Configured Cache Capacity: 0 (0 B)
+Cache Used: 0 (0 B)
+Cache Remaining: 0 (0 B)
+Cache Used%: 100.00%
+Cache Remaining%: 0.00%
+Xceivers: 1
+Last contact: Sat Jul 01 19:02:07 CST 2017
+
+
+Name: 10.29.254.31:50010 (node3)
+Hostname: node3
+Decommission Status : Normal
+Configured Capacity: 42140499968 (39.25 GB)
+DFS Used: 2160427008 (2.01 GB)
+Non DFS Used: 4080926720 (3.80 GB)
+DFS Remaining: 35899146240 (33.43 GB)
+DFS Used%: 5.13%
+DFS Remaining%: 85.19%
+Configured Cache Capacity: 0 (0 B)
+Cache Used: 0 (0 B)
+Cache Remaining: 0 (0 B)
+Cache Used%: 100.00%
+Cache Remaining%: 0.00%
+Xceivers: 1
+Last contact: Sat Jul 01 19:02:07 CST 2017
+```
+再查看HDFS里面的数据：
+```
+hdfs dfs -ls /liumihust/
+```
+结果：
+```
+[root@node5 ~]# hdfs dfs -ls /liumihust/
+17/07/01 19:20:08 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Found 20 items
+-rw-r--r--   2 root supergroup  185540433 2017-07-01 17:31 /liumihust/data1
+-rw-r--r--   2 root supergroup  185540433 2017-07-01 17:32 /liumihust/data10
+-rw-r--r--   2 root supergroup  185540433 2017-07-01 17:33 /liumihust/data11
+-rw-r--r--   2 root supergroup  185540433 2017-07-01 17:33 /liumihust/data12
+-rw-r--r--   2 root supergroup  185540433 2017-07-01 17:33 /liumihust/data13
+-rw-r--r--   2 root supergroup  185540433 2017-07-01 17:33 /liumihust/data14
+-rw-r--r--   2 root supergroup  185540433 2017-07-01 17:33 /liumihust/data15
+-rw-r--r--   2 root supergroup  185540433 2017-07-01 17:33 /liumihust/data16
+-rw-r--r--   2 root supergroup  185540433 2017-07-01 17:50 /liumihust/data17
+-rw-r--r--   2 root supergroup  185540433 2017-07-01 17:50 /liumihust/data18
+-rw-r--r--   2 root supergroup  185540433 2017-07-01 17:50 /liumihust/data19
+-rw-r--r--   2 root supergroup  185540433 2017-07-01 17:31 /liumihust/data2
+-rw-r--r--   2 root supergroup  185540433 2017-07-01 17:51 /liumihust/data20
+-rw-r--r--   2 root supergroup  185540433 2017-07-01 17:31 /liumihust/data3
+-rw-r--r--   2 root supergroup  185540433 2017-07-01 17:32 /liumihust/data4
+-rw-r--r--   2 root supergroup  185540433 2017-07-01 17:32 /liumihust/data5
+-rw-r--r--   2 root supergroup  185540433 2017-07-01 17:32 /liumihust/data6
+-rw-r--r--   2 root supergroup  185540433 2017-07-01 17:32 /liumihust/data7
+-rw-r--r--   2 root supergroup  185540433 2017-07-01 17:32 /liumihust/data8
+-rw-r--r--   2 root supergroup  185540433 2017-07-01 17:32 /liumihust/data9
+
+```
+可以看到数据完好无损，至此，就实现了将HDFS从一个集群原封不动地迁移到了一个新的集群。
+
+the end
+
+
+
