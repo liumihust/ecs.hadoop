@@ -48,11 +48,11 @@ re-balance进程会在后台一直运行，直到达到用户要求的平衡阈�
 #### 1.3 阿里云ECS实例实验
 服务器配置：     
 ECS规格：ecs.n1.large    
-CPU:4核     
+CPU:4核    
 内存：8G    
 系统盘：高效云盘40G     
-数据盘：普通云盘云盘100G    
-OS:CentOS 6.8 64位    
+数据盘：普通云盘100G    
+OS：CentOS 6.8 64位    
 Hadoop版本：2.6.4    
 
 ECS上最初有两台服务器，node1、node2构成一个集群，其中node1上同时启动NameNode、DataNode，node2为DataNode，数据块的副本数为2。   
