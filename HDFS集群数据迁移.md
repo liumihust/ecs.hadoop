@@ -8,7 +8,14 @@
 ## 方案： 
 ### 1 DataNode迁移
 #### 1.1 数据迁移
-将新增的基于本地硬盘的实例（后面统称新实例）添加到现有的集群，新旧混合，然后创建一个文件oldInstances，记录所有旧DataNode的ip地址。放到自定义目录，比如$HADOOP_HOME/etc/hadoop/。然后修改配置文件hdfs-site.xml，添加如下内容：
+##### 1.1.1 将新增的基于本地硬盘的实例（后面统称新实例）添加到现有的集群，新旧混合。
+将新加入的实例的hostname追加到slaves文件，分发到新旧实例，然后在每个新实例上执行，
+```
+$HADOOP_HOME/sbin/hadoop-daemon.sh start datanode
+```
+不需要重启，新的DataNode即可加入集群。   
+##### 1.1.2 删除旧实例
+实例混合后，创建一个文件oldInstances，记录所有旧DataNode的ip地址。放到自定义目录，比如$HADOOP_HOME/etc/hadoop/。然后修改配置文件hdfs-site.xml，添加如下内容：
 ```
            <property>
                <name>dfs.hosts.exclude</name>
@@ -39,6 +46,15 @@ $HADOOP_HOME/sbin/start-balancer.sh -threshold 5 //5表示dataNode之间的硬�
 re-balance进程会在后台一直运行，直到达到用户要求的平衡阈值。
 
 #### 1.3 阿里云ECS实例实验
+服务器配置：     
+ECS规格：ecs.n1.large    
+CPU:4核     
+内存：8G    
+系统盘：高效云盘40G     
+数据盘：普通云盘云盘100G    
+OS:CentOS 6.8 64位    
+Hadoop版本：2.6.4    
+
 ECS上最初有两台服务器，node1、node2构成一个集群，其中node1上同时启动NameNode、DataNode，node2为DataNode，数据块的副本数为2。   
 我们在HDFS存储约2.77G的数据，考虑到副本，实际的数据量应该是两倍，约5.54G。如下所示，HDFS将数据均匀地分布在两个DataNode。
 ```
