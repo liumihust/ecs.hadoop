@@ -1,4 +1,4 @@
-# HDFS挂载本地或云盘
+# HDFS挂载ECS实例本地盘或云盘
 通过 fdisk -l 命令可以查看当前实例的所有硬盘
 ```
 [root@node2 dev]# fdisk -l
