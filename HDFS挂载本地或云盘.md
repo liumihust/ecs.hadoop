@@ -66,7 +66,7 @@ Syncing disks.
 mkfs -t ext4 -c /dev/vdb
 ## 挂载到HDFS数据目录
 我的实例的数据目录为/tmp/hadoop/tmp/dfs/data,name目录为/tmp/hadoop/tmp/dfs/那么，将硬盘挂载到/tmp/hadoop/目录：
-mount /dev/vdb /tmp/hadoop/
+mount /dev/vdb /tmp/hadoop/      
 这样，云盘（本地盘）就成了HDFS的数据盘。
 ```
 [root@node2 ~]# df
