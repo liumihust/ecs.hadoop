@@ -62,10 +62,10 @@ Syncing disks.
 
 这时候查看设备可以看到/dev目录下vdb多了一个分区/dev/vdb1
 ## 格式化硬盘
-根据实例的操作系统的文件系统格式，格式化硬盘，以我的CentOS 6.8为例，格式为EXT4
+根据实例的操作系统的文件系统格式，格式化硬盘，以我的CentOS 6.8为例，格式为EXT4    
 mkfs -t ext4 -c /dev/vdb
 ## 挂载到HDFS数据目录
-我的实例的数据目录为/tmp/hadoop/tmp/dfs/data,name目录为/tmp/hadoop/tmp/dfs/那么，将硬盘挂载到/tmp/hadoop/目录：
+我的实例的数据目录为/tmp/hadoop/tmp/dfs/data,name目录为/tmp/hadoop/tmp/dfs/那么，将硬盘挂载到/tmp/hadoop/目录：    
 mount /dev/vdb /tmp/hadoop/      
 这样，云盘（本地盘）就成了HDFS的数据盘。
 ```
