@@ -583,5 +583,8 @@ Found 20 items
 
 the end
 
+## 附录
+HDFS挂载ECS实例本地盘或云盘 https://github.com/liumihust/ecs.hadoop/blob/master/HDFS%E6%8C%82%E8%BD%BDECS%E5%AE%9E%E4%BE%8B%E6%9C%AC%E5%9C%B0%E7%9B%98%E6%88%96%E4%BA%91%E7%9B%98.md
+
 
 
