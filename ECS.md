@@ -1,1 +1,24 @@
-## 阿里云ECS提供基于本地硬盘的实例，对于IO密集型应用来说，选择基于本地硬盘的实例是一个更佳的选择。而像Hadoop、Spark等大数据处理框架底层的分布式存储都是采用HDFS，HDFS自身所具备的冗余备份的机制，可以不依赖于云盘提供的可靠保证。
+# ECS实例HDFS性能对比测试
+## 实验环境
+云盘实例配置：     
+ECS规格：ecs.n1.large    
+CPU：4核     
+内存：16G     
+系统盘：高效云盘40G     
+数据盘：普通云盘100G     
+OS：CentOS 6.8 64位     
+Hadoop版本：2.6.4    
+
+本地硬盘实例配置：
+ECS规格：ecs.i1.xlarge      
+CPU：4核      
+内存：16G    
+系统盘：高效云盘40G     
+数据盘：本地硬盘100G     
+OS：CentOS 6.8 64位      
+Hadoop版本：2.6.4     
+
+## DFS IO Benchmark
+## MR Benchmark
+## NameNode Benchmark
+## Applications
