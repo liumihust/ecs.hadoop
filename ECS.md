@@ -20,6 +20,10 @@ OS：CentOS 6.8 64位
 Hadoop版本：2.6.4    
 集群规模：4台
 ## DFS IO Benchmark
+![benchmark1](https://github.com/liumihust/gitTset/blob/master/benchmark1.PNG)
 ## MR Benchmark
+![benchmark](https://github.com/liumihust/gitTset/blob/master/benchmark2.PNG)
 ## NameNode Benchmark
+![benchmark](https://github.com/liumihust/gitTset/blob/master/benchmark3.PNG)
 ## Applications
+![benchmark](https://github.com/liumihust/gitTset/blob/master/benchmark4.PNG)
