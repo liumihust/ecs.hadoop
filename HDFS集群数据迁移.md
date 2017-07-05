@@ -46,7 +46,21 @@ $HADOOP_HOME/sbin/start-balancer.sh -threshold 5 //5表示dataNode之间的硬�
 ```
 re-balance进程会在后台一直运行，直到达到用户要求的平衡阈值。
 
-#### 1.3 阿里云ECS实例实验
+### 2 NameNode迁移（可选）
+步骤1已经完成了HDFS的数据的迁移，数据已经全部迁移到了新的实例上。但是NameNode还没有迁移，HDFS的元数据和快照都在NameNode上，当然，如果新实例和旧实例都是在一个数据中心或者局域网里面，用户不迁移旧实例上的NameNode到新实例也可以，因为NameNode不存储数据，只是文件系统的管理者。如果要迁移NameNode，还需要进行后面的步骤。    
+NameNode作为HDFS文件系统的命名空间的管理者，其将所有的文件和目录的元数据保存在一个文件系统树中。为了使与客户端的交互更高效，这些元数据信息都会保存在内存中，但同时也会定期将这些信息保存到硬盘上进行持久化存储，这些信息保存的目录即为：$dfs.namenode.name.dir$/current/  
+关于NameNode的数据的详细介绍请看https://github.com/liumihust/ecs.hadoop/blob/master/Hadoop%20NameNode%20%E5%85%83%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E5%88%86%E6%9E%90.md   
+
+下图为该目录下的结构（我在ECS上的实验机子为例）：   
+![current](https://github.com/liumihust/gitTset/blob/master/current.PNG)
+
+主要的文件：   
+命名空间镜像文件（fsimage）   
+修改日志文件（edits）   
+它们是恢复NameNode时重要的文件。   
+所以我们如果迁移NameNode，就需要先将当前NameNode该目录下的文件全部拷贝到新的NameNode的对应的目录下，即$dfs.namenode.name.dir/current/。 然后在新的实例上启动NameNode进程即可。这样新启动的HDFS集群就是它关闭之前的状态。
+
+### 3 阿里云ECS实例实验
 旧实例配置：     
 ECS规格：ecs.n1.large    
 CPU：4核     
@@ -63,8 +77,9 @@ CPU：4核
 系统盘：高效云盘40G     
 数据盘：本地硬盘100G     
 OS：CentOS 6.8 64位      
-Hadoop版本：2.6.4     
+Hadoop版本：2.6.4 
 
+#### 3.1 DataNode迁移
 ECS上最初有三台服务器，node3、node4、node5构成一个集群，由于系统盘和数据盘都是云盘，所以本实验直接将系统盘作为旧实例HDFS的数据盘，故三个DataNode总的Configured Capacity为120G。node3上同时启动NameNode、DataNode，node4、node5为DataNode，数据块的副本数为2。我们在HDFS存储约3.54G的数据。如下所示，HDFS将数据分布在三个DataNode。
 ```
 -------------------------------------------------
@@ -318,20 +333,8 @@ Last contact: Sat Jul 01 21:33:15 CST 2017
 start-balancer.sh -threshold 1
 ```
 
-### 2 NameNode迁移（可选）
-步骤1已经完成了HDFS的数据的迁移，数据已经全部迁移到了新的实例上。但是NameNode还没有迁移，HDFS的元数据和快照都在NameNode上，当然，如果新实例和旧实例都是在一个数据中心或者局域网里面，用户不迁移旧实例上的NameNode到新实例也可以，因为NameNode不存储数据，只是文件系统的管理者。如果要迁移NameNode，还需要进行后面的步骤。    
-NameNode作为HDFS文件系统的命名空间的管理者，其将所有的文件和目录的元数据保存在一个文件系统树中。为了使与客户端的交互更高效，这些元数据信息都会保存在内存中，但同时也会定期将这些信息保存到硬盘上进行持久化存储，这些信息保存的目录即为：$dfs.namenode.name.dir$/current/  
-关于NameNode的数据的详细介绍请看https://github.com/liumihust/ecs.hadoop/blob/master/Hadoop%20NameNode%20%E5%85%83%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E5%88%86%E6%9E%90.md   
 
-下图为该目录下的结构（我在ECS上的实验机子为例）：   
-![current](https://github.com/liumihust/gitTset/blob/master/current.PNG)
-
-主要的文件：   
-命名空间镜像文件（fsimage）   
-修改日志文件（edits）   
-它们是恢复NameNode时重要的文件。   
-所以我们如果迁移NameNode，就需要先将当前NameNode该目录下的文件全部拷贝到新的NameNode的对应的目录下，即$dfs.namenode.name.dir/current/。 然后在新的实例上启动NameNode进程即可。这样新启动的HDFS集群就是它关闭之前的状态。
-##### ECS实验
+#### NameNode迁移
 前面的实验已经完成了HDFS数据的迁移，从node3、node4、node5全部迁移到node6、node7、node8、node9。接下来我们接着将NameNode从node3迁移到node6（新实例）      
 修改配置文件core-site.xml：
 ``` 
