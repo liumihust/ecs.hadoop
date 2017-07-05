@@ -2,7 +2,7 @@
 
 ## 场景：
 用户已经租用了一定数量的阿里云ECS实例，并搭建了Hadoop或者Spark集群。以前ECS实例的硬盘都是采用云盘，相比如本地硬盘，云盘容错好但是带宽低。而Hadoop和Spark等大数据平台往往对硬盘IO要求很高，另一方面它们底层的存储都是采用HDFS，HDFS本身具有容错机制，因而对于这类的大数据平台采用本地硬盘会是一个更佳的选择。于是，阿里云ECS也新推出了本地硬盘实例。     
-关于基于云盘的HDFS和基于本地硬盘的HDFS性能的详细评测实验在 https://github.com/liumihust/ecs.hadoop/blob/master/ECS_BenchMark.md      
+关于基于ECS云盘的HDFS和基于ECS本地硬盘的HDFS性能的详细评测实验在: https://github.com/liumihust/ecs.hadoop/blob/master/ECS_BenchMark.md      
 但是目前的本地硬盘不能直接添加到用户已有的ECS实例，而需要购买新的基于本地硬盘的实例。对于已经搭建了Hadoop或者Spark平台的用户来说，想要更新到最新的基于本地硬盘的实例，硬盘数据的迁移是一个非常关键的过程。     
 于是，针对HDFS的硬盘数据迁移，我们做了深入的探究。下面是目前已经通过实验证实可行的迁移方案。
 
