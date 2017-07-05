@@ -89,12 +89,6 @@ Non DFS Used: 4267552660 (3.97 GB)
 DFS Remaining: 34133123072 (31.79 GB)
 DFS Used%: 8.87%
 DFS Remaining%: 81.00%
-Configured Cache Capacity: 0 (0 B)
-Cache Used: 0 (0 B)
-Cache Remaining: 0 (0 B)
-Cache Used%: 100.00%
-Cache Remaining%: 0.00%
-Xceivers: 1
 Last contact: Sat Jul 01 21:14:27 CST 2017
 
 
@@ -107,12 +101,6 @@ Non DFS Used: 4239074665 (3.95 GB)
 DFS Remaining: 36218490880 (33.73 GB)
 DFS Used%: 3.99%
 DFS Remaining%: 85.95%
-Configured Cache Capacity: 0 (0 B)
-Cache Used: 0 (0 B)
-Cache Remaining: 0 (0 B)
-Cache Used%: 100.00%
-Cache Remaining%: 0.00%
-Xceivers: 1
 Last contact: Sat Jul 01 21:14:26 CST 2017
 
 
@@ -125,15 +113,9 @@ Non DFS Used: 4015974955 (3.74 GB)
 DFS Remaining: 36067610624 (33.59 GB)
 DFS Used%: 4.88%
 DFS Remaining%: 85.59%
-Configured Cache Capacity: 0 (0 B)
-Cache Used: 0 (0 B)
-Cache Remaining: 0 (0 B)
-Cache Used%: 100.00%
-Cache Remaining%: 0.00%
-Xceivers: 1
 Last contact: Sat Jul 01 21:14:27 CST 2017
 ```
-接下来，我们在ECS再申请4个新实例node6、node7、node8、node9作为DataNode，并挂载本地硬盘到HDFS的数据目录，然后添加到集群，一开始4个新的DataNode没有数据，如下所示：
+接下来，我们在ECS再申请4个新实例node6、node7、node8、node9作为DataNode，并挂载本地硬盘到HDFS的数据目录，具体操作见附录，然后添加到集群，一开始4个新的DataNode没有数据，如下所示：
 ```
 Configured Capacity: 565552676864 (526.71 GB)
 Present Capacity: 530446290944 (494.02 GB)
@@ -156,12 +138,6 @@ Non DFS Used: 5645987840 (5.26 GB)
 DFS Remaining: 104136781824 (96.98 GB)
 DFS Used%: 0.00%
 DFS Remaining%: 94.86%
-Configured Cache Capacity: 0 (0 B)
-Cache Used: 0 (0 B)
-Cache Remaining: 0 (0 B)
-Cache Used%: 100.00%
-Cache Remaining%: 0.00%
-Xceivers: 1
 Last contact: Sat Jul 01 21:27:33 CST 2017
 
 
@@ -174,12 +150,6 @@ Non DFS Used: 4267499520 (3.97 GB)
 DFS Remaining: 34133061632 (31.79 GB)
 DFS Used%: 8.87%
 DFS Remaining%: 81.00%
-Configured Cache Capacity: 0 (0 B)
-Cache Used: 0 (0 B)
-Cache Remaining: 0 (0 B)
-Cache Used%: 100.00%
-Cache Remaining%: 0.00%
-Xceivers: 1
 Last contact: Sat Jul 01 21:27:33 CST 2017
 
 
@@ -192,12 +162,6 @@ Non DFS Used: 5645987840 (5.26 GB)
 DFS Remaining: 104136781824 (96.98 GB)
 DFS Used%: 0.00%
 DFS Remaining%: 94.86%
-Configured Cache Capacity: 0 (0 B)
-Cache Used: 0 (0 B)
-Cache Remaining: 0 (0 B)
-Cache Used%: 100.00%
-Cache Remaining%: 0.00%
-Xceivers: 1
 Last contact: Sat Jul 01 21:27:31 CST 2017
 
 
@@ -210,12 +174,6 @@ Non DFS Used: 4239020032 (3.95 GB)
 DFS Remaining: 36218486784 (33.73 GB)
 DFS Used%: 3.99%
 DFS Remaining%: 85.95%
-Configured Cache Capacity: 0 (0 B)
-Cache Used: 0 (0 B)
-Cache Remaining: 0 (0 B)
-Cache Used%: 100.00%
-Cache Remaining%: 0.00%
-Xceivers: 1
 Last contact: Sat Jul 01 21:27:32 CST 2017
 
 
@@ -228,12 +186,6 @@ Non DFS Used: 5645987840 (5.26 GB)
 DFS Remaining: 104136781824 (96.98 GB)
 DFS Used%: 0.00%
 DFS Remaining%: 94.86%
-Configured Cache Capacity: 0 (0 B)
-Cache Used: 0 (0 B)
-Cache Remaining: 0 (0 B)
-Cache Used%: 100.00%
-Cache Remaining%: 0.00%
-Xceivers: 1
 Last contact: Sat Jul 01 21:27:31 CST 2017
 
 
@@ -246,12 +198,6 @@ Non DFS Used: 5645987840 (5.26 GB)
 DFS Remaining: 104136781824 (96.98 GB)
 DFS Used%: 0.00%
 DFS Remaining%: 94.86%
-Configured Cache Capacity: 0 (0 B)
-Cache Used: 0 (0 B)
-Cache Remaining: 0 (0 B)
-Cache Used%: 100.00%
-Cache Remaining%: 0.00%
-Xceivers: 1
 Last contact: Sat Jul 01 21:27:32 CST 2017
 
 
@@ -264,12 +210,6 @@ Non DFS Used: 4015915008 (3.74 GB)
 DFS Remaining: 36067602432 (33.59 GB)
 DFS Used%: 4.88%
 DFS Remaining%: 85.59%
-Configured Cache Capacity: 0 (0 B)
-Cache Used: 0 (0 B)
-Cache Remaining: 0 (0 B)
-Cache Used%: 100.00%
-Cache Remaining%: 0.00%
-Xceivers: 1
 Last contact: Sat Jul 01 21:27:33 CST 2017
 
 ```
@@ -297,12 +237,6 @@ Non DFS Used: 5646140147 (5.26 GB)
 DFS Remaining: 102234910720 (95.21 GB)
 DFS Used%: 1.73%
 DFS Remaining%: 93.12%
-Configured Cache Capacity: 0 (0 B)
-Cache Used: 0 (0 B)
-Cache Remaining: 0 (0 B)
-Cache Used%: 100.00%
-Cache Remaining%: 0.00%
-Xceivers: 1
 Last contact: Sat Jul 01 21:33:15 CST 2017
 
 
@@ -315,12 +249,6 @@ Non DFS Used: 4267552768 (3.97 GB)
 DFS Remaining: 34133008384 (31.79 GB)
 DFS Used%: 8.87%
 DFS Remaining%: 81.00%
-Configured Cache Capacity: 0 (0 B)
-Cache Used: 0 (0 B)
-Cache Remaining: 0 (0 B)
-Cache Used%: 100.00%
-Cache Remaining%: 0.00%
-Xceivers: 1
 Last contact: Sat Jul 01 21:33:15 CST 2017
 
 
@@ -333,12 +261,6 @@ Non DFS Used: 5649997591 (5.26 GB)
 DFS Remaining: 102513500160 (95.47 GB)
 DFS Used%: 1.48%
 DFS Remaining%: 93.38%
-Configured Cache Capacity: 0 (0 B)
-Cache Used: 0 (0 B)
-Cache Remaining: 0 (0 B)
-Cache Used%: 100.00%
-Cache Remaining%: 0.00%
-Xceivers: 1
 Last contact: Sat Jul 01 21:33:13 CST 2017
 
 
@@ -351,12 +273,6 @@ Non DFS Used: 4239044608 (3.95 GB)
 DFS Remaining: 36218462208 (33.73 GB)
 DFS Used%: 3.99%
 DFS Remaining%: 85.95%
-Configured Cache Capacity: 0 (0 B)
-Cache Used: 0 (0 B)
-Cache Remaining: 0 (0 B)
-Cache Used%: 100.00%
-Cache Remaining%: 0.00%
-Xceivers: 1
 Last contact: Sat Jul 01 21:33:14 CST 2017
 
 
@@ -369,12 +285,6 @@ Non DFS Used: 5648329280 (5.26 GB)
 DFS Remaining: 102483349504 (95.45 GB)
 DFS Used%: 1.50%
 DFS Remaining%: 93.35%
-Configured Cache Capacity: 0 (0 B)
-Cache Used: 0 (0 B)
-Cache Remaining: 0 (0 B)
-Cache Used%: 100.00%
-Cache Remaining%: 0.00%
-Xceivers: 1
 Last contact: Sat Jul 01 21:33:13 CST 2017
 
 
@@ -387,12 +297,6 @@ Non DFS Used: 5647266526 (5.26 GB)
 DFS Remaining: 101827985408 (94.83 GB)
 DFS Used%: 2.10%
 DFS Remaining%: 92.75%
-Configured Cache Capacity: 0 (0 B)
-Cache Used: 0 (0 B)
-Cache Remaining: 0 (0 B)
-Cache Used%: 100.00%
-Cache Remaining%: 0.00%
-Xceivers: 1
 Last contact: Sat Jul 01 21:33:14 CST 2017
 
 
@@ -405,12 +309,6 @@ Non DFS Used: 4015939584 (3.74 GB)
 DFS Remaining: 36067577856 (33.59 GB)
 DFS Used%: 4.88%
 DFS Remaining%: 85.59%
-Configured Cache Capacity: 0 (0 B)
-Cache Used: 0 (0 B)
-Cache Remaining: 0 (0 B)
-Cache Used%: 100.00%
-Cache Remaining%: 0.00%
-Xceivers: 1
 Last contact: Sat Jul 01 21:33:15 CST 2017
 ```
 
@@ -486,12 +384,6 @@ Non DFS Used: 5645991936 (5.26 GB)
 DFS Remaining: 102234992640 (95.21 GB)
 DFS Used%: 1.73%
 DFS Remaining%: 93.12%
-Configured Cache Capacity: 0 (0 B)
-Cache Used: 0 (0 B)
-Cache Remaining: 0 (0 B)
-Cache Used%: 100.00%
-Cache Remaining%: 0.00%
-Xceivers: 1
 Last contact: Sat Jul 01 21:44:25 CST 2017
 
 
@@ -504,12 +396,6 @@ Non DFS Used: 5645991936 (5.26 GB)
 DFS Remaining: 102517452800 (95.48 GB)
 DFS Used%: 1.48%
 DFS Remaining%: 93.38%
-Configured Cache Capacity: 0 (0 B)
-Cache Used: 0 (0 B)
-Cache Remaining: 0 (0 B)
-Cache Used%: 100.00%
-Cache Remaining%: 0.00%
-Xceivers: 1
 Last contact: Sat Jul 01 21:44:25 CST 2017
 
 
@@ -522,12 +408,6 @@ Non DFS Used: 5648138240 (5.26 GB)
 DFS Remaining: 102483488768 (95.45 GB)
 DFS Used%: 1.50%
 DFS Remaining%: 93.35%
-Configured Cache Capacity: 0 (0 B)
-Cache Used: 0 (0 B)
-Cache Remaining: 0 (0 B)
-Cache Used%: 100.00%
-Cache Remaining%: 0.00%
-Xceivers: 1
 Last contact: Sat Jul 01 21:44:25 CST 2017
 
 
@@ -540,12 +420,6 @@ Non DFS Used: 5645991936 (5.26 GB)
 DFS Remaining: 101829181440 (94.84 GB)
 DFS Used%: 2.10%
 DFS Remaining%: 92.76%
-Configured Cache Capacity: 0 (0 B)
-Cache Used: 0 (0 B)
-Cache Remaining: 0 (0 B)
-Cache Used%: 100.00%
-Cache Remaining%: 0.00%
-Xceivers: 1
 Last contact: Sat Jul 01 21:44:25 CST 2017
 ```
 唯一的区别就是Configured Capacity减少了约7G，因为旧的DataNode上的的数据已经被删除。
