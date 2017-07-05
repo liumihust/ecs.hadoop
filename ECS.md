@@ -9,7 +9,7 @@ CPU：4核
 OS：CentOS 6.8 64位     
 Hadoop版本：2.6.4    
 
-本地硬盘实例配置：
+本地硬盘实例配置：    
 ECS规格：ecs.i1.xlarge      
 CPU：4核      
 内存：16G    
