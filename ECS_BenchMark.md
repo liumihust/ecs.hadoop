@@ -20,8 +20,8 @@ OS：CentOS 6.8 64位
 Hadoop版本：2.6.4    
 集群规模：4台
 ## DFS IO Benchmark
-测试HDFS的持续读写能力和随机读写能力。     
-四组测试：大文件写测试、小文件写测试、大文件读测试、小文件读测试    
+测试HDFS的持续读写能力和随机读写能力。    
+四组测试：大文件写测试、小文件写测试、大文件读测试、小文件读测试。     
 性能测试：Average IO Rate, Throughput, Test Exec Time
 ![benchmark11](https://github.com/liumihust/gitTset/blob/master/benchmark11.PNG)
 写测试
