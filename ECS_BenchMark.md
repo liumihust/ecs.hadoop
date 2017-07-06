@@ -28,6 +28,8 @@ Hadoop版本：2.6.4
 ![benchmark12](https://github.com/liumihust/gitTset/blob/master/benchmark12.PNG)
 读测试
 ![benchmark13](https://github.com/liumihust/gitTset/blob/master/benchmark13.PNG)
+对比：
+![benchmark13](https://github.com/liumihust/gitTset/blob/master/benchmark13.PNG)
 ## MR Benchmark
 测试MapReduce小作业的执行效率，比较每个作业的平均执行时间。     
 每次测试迭代的次数为50
