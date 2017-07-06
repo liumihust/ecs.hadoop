@@ -48,7 +48,7 @@ re-balance进程会在后台一直运行，直到达到用户要求的平衡阈�
 
 ### 2 NameNode迁移
 步骤1已经完成了HDFS的数据的迁移，数据已经全部迁移到了新的实例上。但是NameNode还没有迁移，HDFS的元数据和快照都在NameNode上。接下来就是迁移NameNode的数据，还需要进行后面的步骤。     
-NameNode作为HDFS文件系统的命名空间的管理者，其将所有的文件和目录的元数据保存在一个文件系统树中。为了使与客户端的交互更高效，这些元数据信息都会保存在内存中，但同时也会定期将这些信息保存到硬盘上进行持久化存储，这些信息保存的目录即为：$dfs.namenode.name.dir$/current/  
+NameNode作为HDFS文件系统的命名空间的管理者，其将所有的文件和目录的元数据保存在一个文件系统树中。为了使与客户端的交互更高效，这些元数据信息都会保存在内存中，但同时也会定期将这些信息保存到硬盘上进行持久化存储，这些信息保存的目录即为：$dfs.namenode.name.dir$/current/    
 关于NameNode的数据的详细介绍请看https://github.com/liumihust/ecs.hadoop/blob/master/Hadoop%20NameNode%20%E5%85%83%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E5%88%86%E6%9E%90.md   
 
 下图为该目录下的结构（我在ECS上的实验机子为例）：   
