@@ -29,7 +29,8 @@ Hadoop版本：2.6.4
 读测试
 ![benchmark13](https://github.com/liumihust/gitTset/blob/master/benchmark13.PNG)
 ## MR Benchmark
-测试MapReduce小作业的执行效率，比较每个作业的平均执行时间。
+测试MapReduce小作业的执行效率，比较每个作业的平均执行时间。     
+每次测试迭代的次数为50
 ![benchmark2](https://github.com/liumihust/gitTset/blob/master/benchmark2.PNG)
 ## NameNode Benchmark
 测试NameNode的抗压能力，该测试频繁向HDFS发出请求，创建文件，读写文件，关闭文件等。
