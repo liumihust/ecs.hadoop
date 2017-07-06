@@ -9,8 +9,8 @@
 ## 方案： 
 ### 1 DataNode迁移
 #### 1.1 数据迁移
-##### 1.1.1 将新增的基于本地硬盘的实例（后面统称新实例）添加到现有的集群，新旧混合。
-将新加入的实例的hostname追加到slaves文件，分发到新旧实例，然后在每个新实例上执行，
+##### 1.1.1 新旧实例混合
+将新增的基于本地硬盘的实例（后面统称新实例）添加到现有的集群。将新加入的实例的hostname追加到slaves文件，分发到所有新旧实例，然后在每个新实例上执行，
 ```
 $HADOOP_HOME/sbin/hadoop-daemon.sh start datanode
 ```
@@ -31,11 +31,11 @@ $HADOOP_HOME/sbin/hadoop-daemon.sh start datanode
 ```
 hdfs dfsadmin –refreshNodes
 ```
-HDFS会自动读取oldInstances里面所有的hostname，并将这些节点的DataNode数据迁移到其他新的的DataNode上。全部迁移结束后，这些旧的实例将处于Decommissioned状态，不参与HDFS的储存，可以直接杀死。这样就实现了数据从旧实例到新实例的迁移。值得说明的是，迁移后的旧实例的DataNode的数据并不会改变，这样，在迁移过程中出现任何差错，都不会导致原数据丢失。   
+HDFS会自动读取oldInstances里面所有的hostname，并将这些节点的DataNode数据拷贝到其他非oldInstances里记录的DataNode上。全部拷贝结束后，这些旧的实例将处于Decommissioned状态，不参与HDFS的储存，可以直接杀死。这样就实现了数据从旧实例到新实例的拷贝。值得说明的是，完成拷贝后的旧实例的DataNode的数据并不会改变，这样，在拷贝的过程中出现任何差错，都不会导致原数据丢失。      
 注：从新实例往旧实例迁移的时候，一定要切记，新实例的数量要大于当前HDFS所设置的副本数，默认为3，不然会迁移失败。这是HDFS目前尚未fix的一个issue，主要原因是，这种情况很极端，实际场景很少遇到，如果用户遇到了可以尝试先减少配置文件里设置的副本数，再迁移。详见:https://issues.apache.org/jira/browse/HDFS-1590
 
 #### 1.2 Re-balance
-考虑到迁移后的数据分布不一定均衡，可以用HDFS自带的均衡器进行re-balance：   
+考虑到数据拷贝后，数据分布不一定均衡，可以用HDFS自带的均衡器进行re-balance：      
 由于HDFS考虑到re-balance的IO可能会影响应用，所以默认的IO带宽限制得很低，我们也可以提升，
 ```
 hdfs dfsadmin –setBalancerBandwidth 104857600 //比如100M   
@@ -46,8 +46,8 @@ $HADOOP_HOME/sbin/start-balancer.sh -threshold 5 //5表示dataNode之间的硬�
 ```
 re-balance进程会在后台一直运行，直到达到用户要求的平衡阈值。
 
-### 2 NameNode迁移（可选）
-步骤1已经完成了HDFS的数据的迁移，数据已经全部迁移到了新的实例上。但是NameNode还没有迁移，HDFS的元数据和快照都在NameNode上，当然，如果新实例和旧实例都是在一个数据中心或者局域网里面，用户不迁移旧实例上的NameNode到新实例也可以，因为NameNode不存储数据，只是文件系统的管理者。如果要迁移NameNode，还需要进行后面的步骤。    
+### 2 NameNode迁移
+步骤1已经完成了HDFS的数据的迁移，数据已经全部迁移到了新的实例上。但是NameNode还没有迁移，HDFS的元数据和快照都在NameNode上。接下来就是迁移NameNode的数据，还需要进行后面的步骤。     
 NameNode作为HDFS文件系统的命名空间的管理者，其将所有的文件和目录的元数据保存在一个文件系统树中。为了使与客户端的交互更高效，这些元数据信息都会保存在内存中，但同时也会定期将这些信息保存到硬盘上进行持久化存储，这些信息保存的目录即为：$dfs.namenode.name.dir$/current/  
 关于NameNode的数据的详细介绍请看https://github.com/liumihust/ecs.hadoop/blob/master/Hadoop%20NameNode%20%E5%85%83%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E5%88%86%E6%9E%90.md   
 
