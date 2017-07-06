@@ -334,7 +334,7 @@ start-balancer.sh -threshold 1
 ```
 
 
-#### NameNode迁移
+#### 3.2 NameNode迁移
 前面的实验已经完成了HDFS数据的迁移，从node3、node4、node5全部迁移到node6、node7、node8、node9。接下来我们接着将NameNode从node3迁移到node6（新实例）      
 修改配置文件core-site.xml：
 ``` 
