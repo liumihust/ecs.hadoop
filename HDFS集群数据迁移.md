@@ -57,8 +57,8 @@ NameNode作为HDFS文件系统的命名空间的管理者，其将所有的文�
 主要的文件：   
 命名空间镜像文件（fsimage）   
 修改日志文件（edits）   
-它们是恢复NameNode时重要的文件。   
-所以我们如果迁移NameNode，就需要先将当前NameNode该目录下的文件全部拷贝到新的NameNode的对应的目录下，即$dfs.namenode.name.dir/current/。 然后在新的实例上启动NameNode进程。这样新启动的HDFS集群就是NameNode关闭之前的状态。
+它们是恢复NameNode时重要的文件。       
+所以我们如果迁移NameNode，就必须要先将当前NameNode该目录下的文件全部拷贝到新的NameNode的对应的目录下，即$dfs.namenode.name.dir/current/ ，不然即使已经完成了硬盘数据的拷贝，HDFS的命名空间等元信息都会丢失，迁移失败。 然后关闭所有NameNode和DataNode，在新的实例上启动NameNode进程，这样新启动的HDFS集群就是NameNode关闭之前的状态。
 
 ### 3 阿里云ECS实例实验
 旧实例配置：     
