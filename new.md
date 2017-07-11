@@ -88,7 +88,15 @@ DFS Remaining%: 94.61%
 Last contact: Fri Jul 07 13:35:11 CST 2017
 ```
 ### 挂载新盘
-然后挂载新的硬盘，并添加到HDFS目录，如下所示：
+然后挂载新的硬盘，并添加到HDFS目录，在HDFS的配置文件添加如下内容，这是HDFS挂载多个硬盘的通用方法：
+
+```
+           <property>
+　　　　　　　　<name>dfs.datanode.data.dir</name>
+　　　　　　　　<value>/tmp/hadoop/tmp/dfs/data,/tmp/hadoop2/tmp/dfs/data</value>
+　　　　　　</property>
+```
+重启DataNode,可以看到HDFS集群的存储空间变成了800G
 ```
 17/07/07 13:39:40 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
 Safe mode is ON
@@ -151,18 +159,45 @@ DFS Used%: 0.13%
 DFS Remaining%: 94.73%
 Last contact: Fri Jul 07 13:39:41 CST 2017
 ```
-可以看到每个DataNode的Configured Capacity变成了200G,总的数据量以及单个DataNode的数量都没变。再看看两个盘的实际使用率（node6）：
+可以看到每个DataNode的Configured Capacity变成了200G,但是总的数据量以及单个DataNode的数量都没变。再看看两个盘的实际使用率：
 ```
-Filesystem     1K-blocks    Used Available Use% Mounted on
+node6：
+Filesystem     1K-blocks    Used Available Use% Mounted on
 /dev/vda1       41152832 2454900  36600832   7% /
 tmpfs            8166980       0   8166980   0% /dev/shm
 /dev/vdb       107209760 1123560 100633608   2% /tmp/hadoop
+/dev/vdd       103081248   61092  97777276   1% /tmp/hadoop2
+-------------------------------------------------------------
+node7
+Filesystem     1K-blocks    Used Available Use% Mounted on
+/dev/vda1       41152832 2114092  36941640   6% /
+tmpfs            8166980       0   8166980   0% /dev/shm
+/dev/vdb       107209760  593004 101164164   1% /tmp/hadoop
+/dev/vde       103081248   61092  97777276   1% /tmp/hadoop2
+-------------------------------------------------------------
+node8
+Filesystem     1K-blocks    Used Available Use% Mounted on
+/dev/vda1       41152832 2114324  36941408   6% /
+tmpfs            8166980       0   8166980   0% /dev/shm
+/dev/vdb       107209760  325304 101431864   1% /tmp/hadoop
+/dev/vde       103081248   61092  97777276   1% /tmp/hadoop2
+-------------------------------------------------------------
+node9
+Filesystem     1K-blocks    Used Available Use% Mounted on
+/dev/vda1       41152832 2113452  36942280   6% /
+tmpfs            8166980       0   8166980   0% /dev/shm
+/dev/vdb       107209760  325304 101431864   1% /tmp/hadoop
 /dev/vdd       103081248   61092  97777276   1% /tmp/hadoop2
 ```
 新加入的盘挂载在/tmp/hadoop2，目前没有存放数据。
 
 ### 拷贝数据
-开始拷贝数据
+开始拷贝数据，将旧盘挂载目录的所有数据拷贝到新盘相同的目录：
+```
+mkdir -p /tmp/hadoop2/tmp/dfs/data/
+cp -r /tmp/hadoop/tmp/dfs/data/current/  /tmp/hadoop2/tmp/dfs/data/
+```
+然后重启DataNode，查看各节点的存储空间如下：
 ```
 Configured Capacity: 422220791808 (393.22 GB)
 Present Capacity: 400495663980 (372.99 GB)
@@ -223,4 +258,11 @@ DFS Used%: 0.26%
 DFS Remaining%: 94.60%
 Last contact: Fri Jul 07 13:49:42 CST 2017
 ```
-可以看到Configured Capacitybianw变为了400G,数据全部从旧盘转移到了新盘，而且数据分布也未发生任何变化。
+可以看到Configured Capacitybianw变为了400G,数据全部从旧盘转移到了新盘，而且数据分布也未发生任何变化。到此为止，我们就完成了数据的迁移。由于这种单实例内硬盘数据的迁移的方式并不会影响数据的命名空间和索引，所以NameNode不需要任何变动。
+### 总结
+1、相比于HDFS的集群迁移，硬盘间间的数据迁移过程相对简单，因为在HDFS看来，同一个实例不同的硬盘存放的数据属于同一个索引路径。只要数据块不在不同实例间转移，数据块的移动就不会影响索引。所以，我们能够采用直接拷贝的方式完成硬盘间的数据迁移。
+2、我们迁移实验的后是先添加新的硬盘到HDFS集群，然后再从旧硬盘拷贝到新硬盘，然后再删除旧硬盘。这样做的目的是为了说明，说明HDFS挂载多个硬盘方式。如果只是单纯的迁移，只需要三部：
+停止DataNode
+拷贝旧硬盘的数据到新硬盘，并更换HDFS配置文件的数据目录
+重启DataNode
+
