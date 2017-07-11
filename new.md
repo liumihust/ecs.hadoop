@@ -36,7 +36,7 @@ Hadoop版本：2.6.4
 集群规模：4
 
 ### 初始状态
-最开始集群上有4个DataNode，node6-node9，其中node6上启动NameNode。每个datanode只挂载一个数据盘，如下为HDFS的初始状态：
+最开始集群上有4个DataNode，node6-node9，其中node6上启动NameNode。每个DataNode只挂载一个数据盘，如下为HDFS的初始状态：
 ```
 Configured Capacity: 439131176960 (408.97 GB)
 Present Capacity: 416539900780 (387.93 GB)
