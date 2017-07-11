@@ -1,15 +1,26 @@
 ## 场景：
  上一篇详细说明了HDFS集群数据迁移的过程。如果阿里云ECS现在提供旧实例可以直接添加本地硬盘的服务（目前还不支持），而不用去申请新的实例。那问题就变成了HDFS单个实例内硬盘间的数据迁移。
- 虽然目前的HDFS硬盘间的数据转移工作在社区比较成熟的解决方案，比如DiskBalancer（现在已经收入HDFS），它就是专门针对HDFS在单节点内使用多硬盘可能会导致硬盘使用不均的问题，通过统计出硬盘的占用率，进而进行数据迁移，以达到平衡，但是这样的解决方案不能直接应用到我们的场景。因为，1）我们需要进行整个硬盘数据的转移。2）DiskBalancerzhinengzai只能在相同介质的硬盘间转移数据，我们的ECS提供的硬盘类型往往非常多样。我们的场景需要一个新的解决方案。
+ 虽然目前的HDFS硬盘间的数据转移工作在社区比较成熟的解决方案，比如DiskBalancer（现在已经收入HDFS），它就是专门针对HDFS在单节点内使用多硬盘可能会导致硬盘使用不均的问题，通过统计出硬盘的占用率，进而进行数据迁移，以达到平衡，但是这样的解决方案不能直接应用到我们的场景。主要原因如下，     
+ 1）我们的目标是要进行整个硬盘数据的转移      
+ 2）DiskBalancerzhinengzai只能在相同介质的硬盘间转移数据，我们的ECS提供的硬盘类型往往非常多样。      
+ 所以我们的场景需要一个新的解决方案。
  ## 方案
  ### HDFS数据在文件系统的组织
- 我们都知道HDFS将数据按照默认的64M进行分块，并且对每块进行冗余备份存储。这些块实际存放的位置就是我们的配置文件里设置的dataNode的数据目录，以我的ECS服务器为例，数据存放的目录为
+ 我们都知道HDFS将数据按照默认的64M进行分块，并且对每块进行冗余备份存储。这些块实际存放的位置就是我们的配置文件里设置的DataNode的数据目录，以我的ECS服务器为例，数据存放的目录形式为
+ ```
  /tmp/hadoop/tmp/dfs/data/current/BP-170152265-10.30.120.9-1499405595883/current/finalized/subdir0/subdir1/
+ ```
  其中/tmp/hadoop/tmp/dfs/data/为用户自定义，后面的为hadoop自动创建。HDFS的成百上千的数据块就是以这样的形式组织的。这个组织结构被NameNode保存在内存中，当客户端查询或者修改数据的的时候，NameNode能高效的检索到数据块的分布。
  ### 数据迁移
- 当我们添加了一块新的盘之后，将它挂载到文件目录，并且添加到dataNode的数据目录旧可以存放HDFS数据。当我们需要把旧盘的数据转移到新盘的时候，只需要将DataNode关闭，手动将/tmp/hadoop/tmp/dfs/data/muluia目录下的所有数据一级级目录都拷贝到新的目录下，需要注意的是，新旧盘的目录一定要保持完全一致，比如：
-旧盘：/tmp/hadoop/tmp/dfs/data/current/BP-170152265-10.30.120.9-1499405595883/current/finalized/subdir0/subdir1/
-新盘：/tmp/hadoop2/tmp/dfs/data/current/BP-170152265-10.30.120.9-1499405595883/current/finalized/subdir0/subdir1/
+ 当我们添加了一块新的盘之后，将它挂载到文件目录，并且添加到DataNode的数据目录就可以存放HDFS数据。当我们需要把旧盘的数据转移到新盘的时候，只需要将DataNode关闭，手动将/tmp/hadoop/tmp/dfs/data/current/目录下的所有数据以及目录都拷贝到新的目录下，需要注意的是，新旧盘的目录一定要保持完全一致，比如：
+旧盘：
+```
+/tmp/hadoop/tmp/dfs/data/current/BP-170152265-10.30.120.9-1499405595883/current/finalized/subdir0/subdir1/
+```
+新盘：
+```
+/tmp/hadoop2/tmp/dfs/data/current/BP-170152265-10.30.120.9-1499405595883/current/finalized/subdir0/subdir1/
+```
 不然，DataNode就无法定位数据块了。
 当所有的节点都进行了同样的操作后，将旧盘的目录从配置文件中去掉，重启所有的DataNode。
 ## 实验
@@ -19,15 +30,14 @@ CPU：4核
 内存：16G    
 系统盘：高效云盘40G     
 数据盘1：本地硬盘100G     
-数据盘2：普通云盘100G
-OS：CentOS 6.8 64位      
-Hadoop版本：2.6.4 
+数据盘2：普通云盘100G       
+OS：CentOS 6.8 64位     
+Hadoop版本：2.6.4       
 集群规模：4
 
 ### 初始状态
 最开始集群上有4个DataNode，node6-node9，其中node6上启动NameNode。每个datanode只挂载一个数据盘，如下为HDFS的初始状态：
 ```
-17/07/07 13:35:11 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
 Configured Capacity: 439131176960 (408.97 GB)
 Present Capacity: 416539900780 (387.93 GB)
 DFS Remaining: 414368399360 (385.91 GB)
@@ -98,7 +108,6 @@ Last contact: Fri Jul 07 13:35:11 CST 2017
 ```
 重启DataNode,可以看到HDFS集群的存储空间变成了800G
 ```
-17/07/07 13:39:40 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
 Safe mode is ON
 Configured Capacity: 861351968768 (802.20 GB)
 Present Capacity: 817040698220 (760.93 GB)
@@ -260,9 +269,9 @@ Last contact: Fri Jul 07 13:49:42 CST 2017
 ```
 可以看到Configured Capacitybianw变为了400G,数据全部从旧盘转移到了新盘，而且数据分布也未发生任何变化。到此为止，我们就完成了数据的迁移。由于这种单实例内硬盘数据的迁移的方式并不会影响数据的命名空间和索引，所以NameNode不需要任何变动。
 ### 总结
-1、相比于HDFS的集群迁移，硬盘间间的数据迁移过程相对简单，因为在HDFS看来，同一个实例不同的硬盘存放的数据属于同一个索引路径。只要数据块不在不同实例间转移，数据块的移动就不会影响索引。所以，我们能够采用直接拷贝的方式完成硬盘间的数据迁移。
-2、我们迁移实验的后是先添加新的硬盘到HDFS集群，然后再从旧硬盘拷贝到新硬盘，然后再删除旧硬盘。这样做的目的是为了说明，说明HDFS挂载多个硬盘方式。如果只是单纯的迁移，只需要三部：
-停止DataNode
-拷贝旧硬盘的数据到新硬盘，并更换HDFS配置文件的数据目录
+1、相比于HDFS的集群迁移，硬盘间间的数据迁移过程相对简单，因为在HDFS看来，同一个实例不同的硬盘存放的数据属于同一个索引路径。只要数据块不在不同实例间转移，数据块的移动就不会影响索引。所以，我们能够采用直接拷贝的方式完成硬盘间的数据迁移。     
+2、我们迁移实验的后是先添加新的硬盘到HDFS集群，然后再从旧硬盘拷贝到新硬盘，然后再删除旧硬盘。这样做的目的是为了说明，说明HDFS挂载多个硬盘方式。如果只是单纯的迁移，只需要三部：    
+停止DataNode     
+拷贝旧硬盘的数据到新硬盘，并更换HDFS配置文件的数据目录      
 重启DataNode
 
