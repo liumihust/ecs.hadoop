@@ -34,8 +34,8 @@
 将工作分为两个子部分进行开源，因为磁盘迁移是特定场景下的需求，更像是一种工具，而并行化执行工作是针对HDFS一种通用的改进。     
 磁盘迁移：https://github.com/liumihust/Disk-Migration-For-HDFS         
 并行化执行：https://github.com/liumihust/Parallel-Block-Copy-HDFS
-## 3 阿里云ECS实验（One To One）
-### 3.1 实验环境：
+## 3 阿里云ECS实验
+### 3.1 实验环境
 ECS规格：ecs.i1.xlarge      
 CPU：4核      
 内存：16G    
@@ -45,7 +45,7 @@ CPU：4核
 数据盘3：普通云盘100G     
 数据盘4：普通云盘100G       
 OS：CentOS 6.8 64位     
-### 3.2 实验一
+### 3.2 实验一（One To One）
 #### 3.2.1 初始状态
 最开始只挂载了一个数据盘，约100G，如下：
 ```
