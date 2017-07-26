@@ -3,7 +3,7 @@
 ### 1.1 场景
 用户已经将HDFS的数据存放在一定数量的磁盘上，现在加入了新的一批磁盘，想把旧的磁盘上的数据全部迁移到新的硬盘上，比如阿里云ECS用户已经基于云盘搭建了HDFS的集群，现在想转移到性能更好、成本更低的本地硬盘上来。（注：我们的工具不仅仅面向云盘往本地盘迁移的场景，而是通用的HDFS硬盘间数据迁移工具）。    
 以下面的场景为例：
-![捕获1.PNG](https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/skylark/png/30150/5ce0a751086d1af2.PNG) 
+![hdfs11.PNG](https://github.com/liumihust/gitTset/blob/master/hdfs11.PNG) 
 我们想把旧盘的数据全部迁移到新加入的盘。目前的HDFS还不支持该功能，正如上篇博客所介绍那样，手动将目录树对应起来拷贝是一种解决方案，但是它有如下问题：    
 1）前后冗长的目录树要完全一致，至少稍有偏差就会导致DataNode找不到数据块。     
 2）只能一对一拷贝，也就是对等拷贝，拷贝前后每个DataNode的盘数要一致    
@@ -11,25 +11,25 @@
 针对以上这些问题，我最近研究了下HDFS源码，然后开发出了一个HDFS硬盘间数据迁移的工具，只用在HDFS客户端输入一条命令行，HDFS就可以在后台完成数据迁移。值得一提的是，我们的迁移还可以保持数据分布的均衡，不仅仅解决一对一迁移，还解决了多对一、一对多、多对多等复杂迁移场景。
 ### 1.2 期望的效果
 对于上面的例子，我们的工具可以达到的效果接近如下：
-![捕获2.PNG](https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/skylark/png/30150/307453f106d4e306.PNG) 
+![hdfs12](https://github.com/liumihust/gitTset/blob/master/hdfs12.PNG) 
 ## 2 技术细节
 我们的迁移过程分为两个阶段：计划阶段和执行阶段。
 ### 2.1 计划阶段（plan）
 所谓阶段就是，根据现有的硬盘的实际情况，规划出如1.2的迁移计划。整个计划可以分解为一个个Step，每个Step负责将一定数量的某个源硬盘的数据迁移到目标盘，每个Step的数据迁移量都是工具自动计算详见2.1.1。Plan和Step大致的关系如下所示：
-![捕获3.PNG](https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/skylark/png/30150/393f943b1510fef3.PNG) 
+![hdfs20](https://github.com/liumihust/gitTset/blob/master/hdfs20.PNG) 
 #### 2.1.1 迁移量的计算
 当有多个新硬盘的时候，我们为了保证迁移后的数据分布保持平衡，我们在每一步（step）迁移操作的时候，都会按照硬盘的空间进行分配接收的数据量，这样全部迁移结束后，每个新硬盘的数据占用率都是均等的。具体计算如下：
-![捕获5.PNG](https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/skylark/png/30150/46104723a321bcad.PNG) 
+![hdfs21](https://github.com/liumihust/gitTset/blob/master/hdfs21.PNG) 
 这种分配方式可以确保最后的数据分布更均衡：
-![捕获6.PNG](https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/skylark/png/30150/5f15b0f635bb704c.PNG) 
+![hdfs22](https://github.com/liumihust/gitTset/blob/master/hdfs22.PNG) 
 我们计算出这样的一个规划后，将该plan序列化成json的格式持久化保存到文件系统里面，为下一阶段做准备。
 ### 2.2 执行阶段（execute）
 执行阶段就是将上一部生成的json读进来并反序列化成plan对象，将里面的每一个step生成对应的工作流，以此按照step的顺序执行，执行完毕就完成了所有的数据的迁移。这一阶段的流程图如下：
-![捕获4.PNG](https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/skylark/png/30150/d3b550419d208576.PNG) 
+![hdfs23](https://github.com/liumihust/gitTset/blob/master/hdfs23.PNG) 
 ### 2.3 执行并行优化
 2.2 的串行执行是最简单也最安全的方式。在HDFS里面同一个盘不能同时进行并发操作，因为不论是取数据块还是存放数据块都是通过迭代器实现的，一旦出现并发copy in或者copy out就会导致迭代器出错。所以目前的HDFS里面还没有并行拷贝的机制。
 但是磁盘数据的拷贝往往就是针对多盘的场景，在多盘的场景下，没有冲突的“盘对”（Volume Pair）是可以独立进行操作的，只是在运行时发掘这样的并行特征并且能够低开销的调度有一定的难度。2.2的流水线Step中就存在可以并行执行的部分，我们的工作就是挖掘出这一系列Step中可以并行的部分，时刻做到最大的并行化，提高数据迁移的效率（这工作有点类似于程序模块间的并行化）。
-![parallel1.PNG](https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/skylark/png/30150/b615a38648a8bb81.PNG) 
+![parallel1.PNG](https://github.com/liumihust/gitTset/blob/master/parallel1.PNG) 
 ### 2.4 开源地址
 将工作分为两个子部分进行开源，因为磁盘迁移是特定场景下的需求，更像是一种工具，而并行化执行工作是针对HDFS一种通用的改进。
 磁盘迁移：https://github.com/liumihust/Disk-Migration-For-HDFS
