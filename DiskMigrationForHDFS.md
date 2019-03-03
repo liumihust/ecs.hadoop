@@ -32,7 +32,7 @@
 ![parallel1.PNG](https://github.com/liumihust/gitTset/blob/master/parallel1.PNG) 
 ### 2.4 开源地址
 将工作分为两个子部分进行开源，因为磁盘迁移是特定场景下的需求，更像是一种工具，而并行化执行工作是针对HDFS一种通用的改进。     
-磁盘迁移：https://github.com/liumihust/Disk-Migration-For-HDFS         
+磁盘迁移：https://github.com/liumihust/DiskMigate         
 并行化执行：https://github.com/liumihust/Parallel-Block-Copy-HDFS
 ## 3 阿里云ECS实验
 ### 3.1 实验环境
